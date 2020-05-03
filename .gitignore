@@ -6,3 +6,4 @@ hbonds/bin/
 **/debug
 src/preprocessing/ss.py
 src/preprocessing/yy.py
+**.pdb

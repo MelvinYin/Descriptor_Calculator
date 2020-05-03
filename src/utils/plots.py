@@ -77,6 +77,9 @@ def plot_signature_logo(descr_full, num_res_considered=4, title=None):
         res_sorted = list(zip(*sorted(zip(*res_unique), key=_for_sort)))
         res_names, res_counts = res_sorted[0][:num_res_considered], \
                                 res_sorted[1][:num_res_considered]
+        print(res_names)
+        print(res_counts)
+        print("")
         res_names = res_names[::-1]
         res_counts = res_counts[::-1]
         res_percents = list([i/num_seqs for i in res_counts])
@@ -269,8 +272,12 @@ def main():
     ['sno', 'contact', 'covalent', 'phi', 'psi', 'region', 'ss', 'ext', 'role',
      'category', 'donor', 'acc', 'res', 'CA', 'filename', 'seq_marker', 'cid']
     """
-    with open(os.path.join(paths.store_dir, "descrs.pkl"),
-              "rb") as pklfile:
+    input_df = os.path.join(paths.DESCRS, "efhand_descr.pkl")
+    # output_path = os.path.join(paths.ROOT, "final_descr_output_orig.pkl")
+    # output_path = os.path.join(paths.ROOT, "final_descr_output.pkl")
+    # output_path = os.path.join(paths.ROOT, "pid_pdb_map.pkl")
+
+    with open(input_df, "rb") as pklfile:
         df = pkl.load(pklfile)
     # df.sort_index(inplace=True)
     plot_signature_logo(df)

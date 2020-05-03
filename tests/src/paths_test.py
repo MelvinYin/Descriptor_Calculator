@@ -1,28 +1,22 @@
 import os
 
-from config import paths
-
-ROOT = paths.ROOT
+ROOT = "/home/melvin/Desktop/Predictive_for_efhand"
 ROOT_TEST = os.path.join(ROOT, 'tests')
 DATA = os.path.join(ROOT_TEST, 'data')
-
-USER_INPUT = os.path.join(DATA, 'input')
-USER_OUTPUT = os.path.join(DATA, 'output')
+USER = os.path.join(DATA, 'user')
+USER_INPUT = os.path.join(USER, 'input')
+USER_OUTPUT = os.path.join(USER, 'output')
 INTERNAL = os.path.join(DATA, 'internal')
-DEBUG = os.path.join(DATA, 'debug')
 REF = os.path.join(DATA, 'ref')
 
-MEME_SUITE = paths.MEME_SUITE
-MEME_EXEC = paths.MEME_EXEC
-MAST_EXEC = paths.MAST_EXEC
-PDB_FOLDER = paths.PDB_FOLDER
+TMP = os.path.join(INTERNAL, 'tmp')
+TMP_FILE = os.path.join(TMP, 'tmp_file')
+TMP_FILE_TEMPLATE = os.path.join(TMP, 'tmp_file_{}')
 
 PROSITE_EXTRACT = os.path.join(USER_INPUT, 'prosite_extract.txt')
 IONCOM_EXTRACT = os.path.join(USER_INPUT, 'ioncom_extract.txt')
 IONCOM_BINDING_SITES = os.path.join(USER_INPUT, 'ioncom_binding_sites.txt')
 REF_MEME_TXT = os.path.join(USER_INPUT, 'ref_meme.txt')
-
-TMP_FILE_TEMPLATE = os.path.join(DEBUG, 'output_{}.txt')
 
 # TestParseExtract
 REF_PROSITE_EXTRACT_PNAME_CID = os.path.join(REF, 'prosite_extract.pkl')
@@ -44,24 +38,17 @@ REF_RUN_ALL_3 = os.path.join(REF, 'run_all_3.pkl')
 # TestMemeConvConversion
 ORIG_MEME_FOR_CONVERT = os.path.join(USER_INPUT, 'orig_meme.txt')
 REF_CONV_MATRIX = os.path.join(REF, 'meme_to_conv_matrix.txt')
-REF_CONV_COMPOSITION = os.path.join(REF, 'meme_to_conv_composition.txt')
+REF_CONV_COMPOSITION = os.path.join(REF, 'meme_to_conv_compostion.txt')
 REF_MEME_FROM_CONV = os.path.join(REF, 'converted_meme.txt')
 
-# TestMemeSuite
-MEME_TEST_SEQ = os.path.join(USER_INPUT, 'meme_test_seq.fasta')
-MAST_TEST_DIAG = os.path.join(USER_INPUT, 'mast_test_diagram.txt')
-REF_MEME_COUNTS = os.path.join(USER_INPUT, 'meme_counts.pkl')
-REF_MAST_DIAGRAMS = os.path.join(USER_INPUT, 'mast_diagrams.pkl')
+PNAME_CID = os.path.join(INTERNAL, 'pname_cid_map.pkl')
+PDB_FOLDER = os.path.join(ROOT, 'data', 'internal', 'pdb_files')
+MOTIF_POS = os.path.join(INTERNAL, 'motif_pos.pkl')
+TMP = os.path.join(INTERNAL, 'tmp')
+MEME_MAST_FOLDER = os.path.join(TMP, 'meme_mast')
 
-
-# PNAME_CID = os.path.join(INTERNAL, 'pname_cid_map.pkl')
-# # PDB_FOLDER = os.path.join(ROOT, 'data', 'internal', 'pdb_files')
-# MOTIF_POS = os.path.join(INTERNAL, 'motif_pos.pkl')
-
-# MEME_MAST_FOLDER = os.path.join(TMP, 'meme_mast')
-#
-# FULL_SEQS = os.path.join(INTERNAL, 'seqs.fasta')
-# CONV_SEED_SEQS = os.path.join(INTERNAL, 'seed_seqs.fasta')
+FULL_SEQS = os.path.join(INTERNAL, 'seqs.fasta')
+CONV_SEED_SEQS = os.path.join(INTERNAL, 'seed_seqs.fasta')
 
 # CONVERGE_EXEC = os.path.join(EXTERNAL, "converge")
 #
