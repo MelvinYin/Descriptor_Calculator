@@ -12,7 +12,7 @@ from descr.descr_main import calculate_single
 
 def get_matcher():
     matchers = dict()
-    output_matcher = os.path.join(paths.MATCHERS, "efhand_matcher_full.pkl")
+    output_matcher = os.path.join(paths.MATCHERS, "efhand_matcher.pkl")
     with open(output_matcher, 'rb') as file:
         matchers['ef'] = pickle.load(file)
     return matchers['ef']

@@ -1,7 +1,5 @@
 import os
 
-# src = os.path.dirname(__file__)
-# ROOT = "/home/yincp/Desktop/Descriptor_Calculator"
 ROOT = "/".join(os.path.dirname(__file__).split("/")[:-2])
 DATA = os.path.join(ROOT, 'data')
 USER_INPUT = os.path.join(ROOT, 'input')

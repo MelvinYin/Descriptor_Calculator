@@ -55,23 +55,23 @@ def main_with_ui():
 
 
 if __name__ == "__main__":
-    input_path = os.path.join(paths.ROOT, "mg_dxdxxd_motif_pos.txt")
-    output_path = os.path.join(paths.ROOT, "mg_dxdxxd_descr.pkl")
+    input_path = os.path.join(paths.USER_INPUT, "mg_dxdxxd_motif_pos.txt")
+    output_path = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
     main(input_path, output_path)
 
-    input_path = os.path.join(paths.ROOT, "efhand_motif_pos.txt")
-    output_path = os.path.join(paths.ROOT, "efhand_descr.pkl")
+    input_path = os.path.join(paths.USER_INPUT, "efhand_motif_pos.txt")
+    output_path = os.path.join(paths.DESCRS, "efhand_descr.pkl")
     main(input_path, output_path)
 
-    input_path = os.path.join(paths.ROOT, "GxGGxG_motif_pos.txt")
-    output_path = os.path.join(paths.ROOT, "GxGGxG_descr.pkl")
+    input_path = os.path.join(paths.USER_INPUT, "GxGGxG_motif_pos.txt")
+    output_path = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
     main(input_path, output_path)
 
-    input_path = os.path.join(paths.ROOT, "GxxGxG_motif_pos.txt")
-    output_path = os.path.join(paths.ROOT, "GxxGxG_descr.pkl")
+    input_path = os.path.join(paths.USER_INPUT, "GxxGxG_motif_pos.txt")
+    output_path = os.path.join(paths.DESCRS, "GxxGxG_descr.pkl")
     main(input_path, output_path)
 
-    input_path = os.path.join(paths.ROOT, "GxGxxG_motif_pos.txt")
-    output_path = os.path.join(paths.ROOT, "GxGxxG_descr.pkl")
+    input_path = os.path.join(paths.USER_INPUT, "GxGxxG_motif_pos.txt")
+    output_path = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
     main(input_path, output_path)
 

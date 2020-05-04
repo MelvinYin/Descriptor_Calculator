@@ -96,12 +96,10 @@ class Logo:
     def get_plot(self, data):
         fig1 = plt.figure(figsize=self._figsize)
         ax = fig1.add_subplot(111)
-        # fig, ax = plt.subplots(figsize=self._figsize)
         x = self._init_pos
         for per_position in data:
             y = 0
             for AA3, proportion in per_position:
-            # for AA3, proportion in per_position[0], per_position[1]:
                 ax = self.add_patch(AA3, x, y, proportion, ax)
                 y += proportion
             x += 1
@@ -146,54 +144,3 @@ def _to_align():
     plot.axvline(-1.478)
     plot.axvline(-0.499)
     plt.show()
-
-# import numpy as np
-#
-# AA3_to_AA1 = dict(ALA='A', CYS='C', ASP='D', GLU='E', PHE='F', GLY='G', HIS='H',
-#                   HSE='H', HSD='H', ILE='I', LYS='K', LEU='L', MET='M', MSE='M',
-#                   ASN='N', PRO='P', GLN='Q', ARG='R', SER='S', THR='T', VAL='V',
-#                   TRP='W', TYR='Y')
-# data = [[] for __ in range(30)]
-# length = len(AA3_to_AA1)
-# per_count = 1 / length
-# for m in range(30):
-#     for i in AA3_to_AA1.keys():
-#         data[m].append((i, per_count))
-#         if len(data[m]) > 3:
-#             break
-# plot, plot2 = Logo(data, -1, (5, 20)).plot
-# plot.canvas.draw()
-# data = np.fromstring(plot.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-# data = data.reshape(plot.canvas.get_width_height()[::-1] + (3,))
-#
-# from config import paths
-# import os
-# # data = data[1500:1800]
-# # data = data[:, 50:200]
-# # for i in range(len(data)):
-# #     for j in range(len(data[0])):
-# #         print(data[i][j])
-#
-# # plt.imsave(data)
-# plt.imsave(os.path.join(paths.ROOT, 'tmp2.png'), data)
-# print(data.shape)
-# plt.imshow(data)
-# plt.show()
-
-# from bokeh.plotting import figure, show
-# p  =figure()
-# url = os.path.join(os.path.basename(os.path.dirname(__file__)), "static",
-#                    "tmp2.png")
-# print(url)
-# p.image_url(url=[url], x=0, y=0, w=None, h=None)
-# from bokeh.plotting import figure, show, ColumnDataSource, curdoc
-# # p.image_rgba(image=[data], x=0, y=0, dw=1, dh=1, dilate=True)
-# # show(p)
-# curdoc().add_root(p)
-# print(data.shape)
-# plt.imshow(data)
-# plt.show()
-# x = Logo()
-# class Logo:
-#     def __init__(self, data, init_pos, figsize=(20, 3), convert_AA3=True,
-#                  title=None):

@@ -47,7 +47,6 @@ import matplotlib.pyplot as plt
 def load_matchers():
     input_df = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
     output_matcher = os.path.join(paths.MATCHERS, "mg_dxdxxd_matcher.pkl")
-    # output_matcher = os.path.join(paths.MATCHERS, "mg_dxdxxd_matcher_full.pkl")
     with open(input_df, 'rb', -1) as file:
         df = pickle.load(file)
     matcher = Matcher(cropped=False)
@@ -57,7 +56,6 @@ def load_matchers():
     print("mg_dxdxxd_descr done")
 
     input_df = os.path.join(paths.DESCRS, "efhand_descr.pkl")
-    # output_matcher = os.path.join(paths.MATCHERS, "efhand_matcher_full.pkl")
     output_matcher = os.path.join(paths.MATCHERS, "efhand_matcher.pkl")
     with open(input_df, 'rb', -1) as file:
         df = pickle.load(file)
