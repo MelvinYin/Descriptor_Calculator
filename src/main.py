@@ -31,6 +31,7 @@ def main(input_path, output_path):
     motif_pos_path = input_path
     with open(motif_pos_path, 'rb') as file:
         motif_pos_map = pickle.load(file)
+    print(list(motif_pos_map.keys()))
     timecheck = time()
     descrs = descr_main.calculate(motif_pos_map)
     print(f"Time taken: {time() - timecheck}")
@@ -41,6 +42,9 @@ def main(input_path, output_path):
     generic.warn_if_exist(paths.OUTPUT_DESCRS)
     # Switching back to pkl to avoid false float comparison failures.
     # with open(os.path.join(paths.ROOT, "final_descr_output_orig.pkl"),
+    import numpy as np
+    print(descrs.columns)
+    print(np.unique(descrs['filename'], return_counts=True))
     with open(output_path, "wb") as file:
         pickle.dump(descrs, file, -1)
 
@@ -55,23 +59,25 @@ def main_with_ui():
 
 
 if __name__ == "__main__":
-    input_path = os.path.join(paths.USER_INPUT, "mg_dxdxxd_motif_pos.txt")
-    output_path = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
+    # input_path = os.path.join(paths.USER_INPUT, "mg_dxdxxd_motif_pos.txt")
+    # output_path = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
+    # main(input_path, output_path)
+    #
+    # input_path = os.path.join(paths.USER_INPUT, "efhand_motif_pos.txt")
+    # output_path = os.path.join(paths.DESCRS, "efhand_descr.pkl")
+    # main(input_path, output_path)
+    #
+    # input_path = os.path.join(paths.USER_INPUT, "GxGGxG_motif_pos.txt")
+    # output_path = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
+    # main(input_path, output_path)
+    #
+    # input_path = os.path.join(paths.USER_INPUT, "GxxGxG_motif_pos.txt")
+    # output_path = os.path.join(paths.DESCRS, "GxxGxG_descr.pkl")
+    # main(input_path, output_path)
+    #
+    # input_path = os.path.join(paths.USER_INPUT, "GxGxxG_motif_pos.txt")
+    # output_path = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
+    # main(input_path, output_path)
+    input_path = os.path.join(paths.ROOT, "output.pkl")
+    output_path = os.path.join(paths.DESCRS, "output_descr.pkl")
     main(input_path, output_path)
-
-    input_path = os.path.join(paths.USER_INPUT, "efhand_motif_pos.txt")
-    output_path = os.path.join(paths.DESCRS, "efhand_descr.pkl")
-    main(input_path, output_path)
-
-    input_path = os.path.join(paths.USER_INPUT, "GxGGxG_motif_pos.txt")
-    output_path = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
-    main(input_path, output_path)
-
-    input_path = os.path.join(paths.USER_INPUT, "GxxGxG_motif_pos.txt")
-    output_path = os.path.join(paths.DESCRS, "GxxGxG_descr.pkl")
-    main(input_path, output_path)
-
-    input_path = os.path.join(paths.USER_INPUT, "GxGxxG_motif_pos.txt")
-    output_path = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
-    main(input_path, output_path)
-

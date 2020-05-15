@@ -11,8 +11,9 @@ class _PhipsiMatcher:
     def __init__(self):
         # only accept from a single relative_sno, only values.
         self.to_skip = False
-        self.weight_scaling_factor = 15 # so self.weight is not too low.
+        self.weight_scaling_factor = 10 # so self.weight is not too low.
         self.q_scaling_factor = 1
+        self.weight_accom_factor = 0.2
 
     def load(self, phipsis):
         self.length = len(phipsis)
@@ -45,7 +46,7 @@ class _PhipsiMatcher:
                  + np.mean(precisions[:, 1, 1])
         weight = weight * self.weight_scaling_factor  # for matcher weight
         self.weight = min(weight, 1)
-
+        self.weight *= self.weight_accom_factor
         covs = gm.covariances_
         cov_invs = np.array([np.linalg.inv(cov) for cov in covs])
         cluster_dist = gm.predict_proba(phipsis)

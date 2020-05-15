@@ -73,6 +73,9 @@ class SignatureMatcher:
         weight, p = self.matcher.query(res)
         return weight, p
 
+    def get_weight(self):
+        return self.matcher.weight
+
 class _SignatureMatcher:
     def __init__(self):
         self.res_distribution = None
@@ -81,7 +84,9 @@ class _SignatureMatcher:
         self.res = res
         __, counts = np.unique(res, return_counts=True)
         counts = np.sort(counts)[::-1]
-        self.weight = sum(counts[:2]) / sum(counts)
+        self.weight = (counts[0] / sum(counts)) ** 2
+        if len(counts) > 1:
+            self.weight += (counts[1] / sum(counts)) ** 2 * 0.3
         return
 
     def query(self, res):

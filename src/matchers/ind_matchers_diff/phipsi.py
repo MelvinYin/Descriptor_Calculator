@@ -11,7 +11,7 @@ class _PhipsiMatcher:
     def __init__(self):
         # only accept from a single relative_sno, only values.
         self.to_skip = False
-        self.weight_scaling_factor = 15 # so self.weight is not too low.
+        self.weight_scaling_factor = 0.2 # so self.weight is not too low.
         self.q_scaling_factor = 1
 
     def load(self, phipsis):

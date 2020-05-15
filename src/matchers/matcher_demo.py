@@ -45,25 +45,35 @@ import matplotlib.pyplot as plt
 #     print("")
 
 def load_matchers():
-    input_df = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
-    output_matcher = os.path.join(paths.MATCHERS, "mg_dxdxxd_matcher.pkl")
-    with open(input_df, 'rb', -1) as file:
-        df = pickle.load(file)
-    matcher = Matcher(cropped=False)
-    matcher.load(df)
-    with open(output_matcher, 'wb') as file:
-        pickle.dump(matcher, file, -1)
-    print("mg_dxdxxd_descr done")
+    # input_df = os.path.join(paths.DESCRS, "output_descr.pkl")
+    # output_matcher = os.path.join(paths.MATCHERS, "special_seven_matcher.pkl")
+    # with open(input_df, 'rb', -1) as file:
+    #     df = pickle.load(file)
+    # matcher = Matcher(cropped=False)
+    # matcher.load(df)
+    # with open(output_matcher, 'wb') as file:
+    #     pickle.dump(matcher, file, -1)
+    # print("mg_dxdxxd_descr done")
 
-    input_df = os.path.join(paths.DESCRS, "efhand_descr.pkl")
-    output_matcher = os.path.join(paths.MATCHERS, "efhand_matcher.pkl")
-    with open(input_df, 'rb', -1) as file:
-        df = pickle.load(file)
-    matcher = Matcher(cropped=False)
-    matcher.load(df)
-    with open(output_matcher, 'wb') as file:
-        pickle.dump(matcher, file, -1)
-    print("efhand_descr done")
+    # input_df = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
+    # output_matcher = os.path.join(paths.MATCHERS, "mg_dxdxxd_matcher.pkl")
+    # with open(input_df, 'rb', -1) as file:
+    #     df = pickle.load(file)
+    # matcher = Matcher(cropped=False)
+    # matcher.load(df)
+    # with open(output_matcher, 'wb') as file:
+    #     pickle.dump(matcher, file, -1)
+    # print("mg_dxdxxd_descr done")
+    #
+    # input_df = os.path.join(paths.DESCRS, "efhand_descr.pkl")
+    # output_matcher = os.path.join(paths.MATCHERS, "efhand_matcher.pkl")
+    # with open(input_df, 'rb', -1) as file:
+    #     df = pickle.load(file)
+    # matcher = Matcher(cropped=False)
+    # matcher.load(df)
+    # with open(output_matcher, 'wb') as file:
+    #     pickle.dump(matcher, file, -1)
+    # print("efhand_descr done")
 
     # input_df = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
     # output_matcher = os.path.join(paths.MATCHERS, "GxGGxG_matcher.pkl")
@@ -85,15 +95,15 @@ def load_matchers():
     #     pickle.dump(matcher, file, -1)
     # print("GxxGxG_descr done")
     #
-    # input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
-    # output_matcher = os.path.join(paths.MATCHERS, "GxGxxG_matcher.pkl")
-    # with open(input_df, 'rb', -1) as file:
-    #     df = pickle.load(file)
-    # matcher = Matcher(cropped=False)
-    # matcher.load(df)
-    # with open(output_matcher, 'wb') as file:
-    #     pickle.dump(matcher, file, -1)
-    # print("GxGxxG_descr done")
+    input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
+    output_matcher = os.path.join(paths.MATCHERS, "GxGxxG_matcher.pkl")
+    with open(input_df, 'rb', -1) as file:
+        df = pickle.load(file)
+    matcher = Matcher(cropped=False)
+    matcher.load(df)
+    with open(output_matcher, 'wb') as file:
+        pickle.dump(matcher, file, -1)
+    print("GxGxxG_descr done")
     pass
 
 if __name__ == "__main__":

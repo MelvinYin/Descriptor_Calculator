@@ -31,7 +31,54 @@ from descr.descr_main import calculate_single
 #         import sys
 #         sys.exit()
 #     p_all_sno = matcher.query(return_val)
+import pandas as pd
 
+def load_matchers_json():
+    input_df = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.json")
+    output_matcher = os.path.join(paths.MATCHERS,
+                                  "mg_dxdxxd_matcher_generic.pkl")
+    df = pd.read_json(input_df)
+    matcher = Matcher()
+    matcher.load(df)
+    with open(output_matcher, 'wb') as file:
+        pickle.dump(matcher, file, -1)
+
+    input_df = os.path.join(paths.DESCRS, "efhand_descr.json")
+    output_matcher = os.path.join(paths.MATCHERS,
+                                  "efhand_matcher_generic.pkl")
+    df = pd.read_json(input_df)
+    matcher = Matcher()
+    matcher.load(df)
+    with open(output_matcher, 'wb') as file:
+        pickle.dump(matcher, file, -1)
+
+    input_df = os.path.join(paths.DESCRS, "GxGGxG_descr.json")
+    output_matcher = os.path.join(paths.MATCHERS,
+                                  "GxGGxG_matcher_generic.pkl")
+    df = pd.read_json(input_df)
+    matcher = Matcher()
+    matcher.load(df)
+    with open(output_matcher, 'wb') as file:
+        pickle.dump(matcher, file, -1)
+
+    input_df = os.path.join(paths.DESCRS, "GxxGxG_descr.json")
+    output_matcher = os.path.join(paths.MATCHERS,
+                                  "GxxGxG_matcher_generic.pkl")
+    df = pd.read_json(input_df)
+    matcher = Matcher()
+    matcher.load(df)
+    with open(output_matcher, 'wb') as file:
+        pickle.dump(matcher, file, -1)
+
+    input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.json")
+    output_matcher = os.path.join(paths.MATCHERS,
+                                  "GxGxxG_matcher_generic.pkl")
+    df = pd.read_json(input_df)
+    matcher = Matcher()
+    matcher.load(df)
+    with open(output_matcher, 'wb') as file:
+        pickle.dump(matcher, file, -1)
+    pass
 
 def load_matchers():
     input_df = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
@@ -81,4 +128,36 @@ def load_matchers():
         pickle.dump(matcher, file, -1)
     pass
 
-load_matchers()
+
+load_matchers_json()
+# def convert_to_json():
+#     input_df = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
+#     with open(input_df, 'rb', -1) as file:
+#         df = pickle.load(file)
+#     output_json = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.json")
+#     df.to_json(output_json)
+#
+#     input_df = os.path.join(paths.DESCRS, "efhand_descr.pkl")
+#     with open(input_df, 'rb', -1) as file:
+#         df = pickle.load(file)
+#     output_json = os.path.join(paths.DESCRS, "efhand_descr.json")
+#     df.to_json(output_json)
+#
+#     input_df = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
+#     with open(input_df, 'rb', -1) as file:
+#         df = pickle.load(file)
+#     output_json = os.path.join(paths.DESCRS, "GxGGxG_descr.json")
+#     df.to_json(output_json)
+#
+#     input_df = os.path.join(paths.DESCRS, "GxxGxG_descr.pkl")
+#     with open(input_df, 'rb', -1) as file:
+#         df = pickle.load(file)
+#     output_json = os.path.join(paths.DESCRS, "GxxGxG_descr.json")
+#     df.to_json(output_json)
+#
+#     input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
+#     with open(input_df, 'rb', -1) as file:
+#         df = pickle.load(file)
+#     output_json = os.path.join(paths.DESCRS, "GxGxxG_descr.json")
+#     df.to_json(output_json)
+

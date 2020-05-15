@@ -388,15 +388,14 @@ class HbondParser(BaseParser):
         hbonds_fname = "query.hbonds"
         pdb_fname = os.path.abspath(filepath)
         hb_exec = pdb_paths.HB_EXEC
-        print(hb_exec)
-        print(pdb_fname)
-        print(hbonds_fname)
-        process = subprocess.run([hb_exec, pdb_fname, hbonds_fname], shell=True)
+        # process = subprocess.run([hb_exec, pdb_fname, hbonds_fname], shell=True)
+        process = subprocess.run(f"{hb_exec} {pdb_fname} {hbonds_fname}", shell=True)
         if process.returncode != 0:
             msg = "Could not prepare hydrogen bonds results for %s" % pdb_fname
             raise RuntimeError(msg)
         with open(hbonds_fname, 'r') as f:
             file_data = [line for line in f]
+        print(file_data)
         os.remove(hbonds_fname)
         return file_data
 

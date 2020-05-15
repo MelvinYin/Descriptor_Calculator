@@ -9,9 +9,6 @@ matplotlib-aligning-xticks, with color properties taken from weblogo.
 """
 
 from enum import Enum, auto
-import matplotlib
-
-matplotlib.use('TkAgg')
 
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import PathPatch

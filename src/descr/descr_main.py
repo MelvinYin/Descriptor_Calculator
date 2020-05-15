@@ -79,6 +79,8 @@ def calculate(motif_pos_map):
             full_descr = _add_columns(descr, pdb_id, motif_pos, cid)
             descrs = descrs.append(full_descr, ignore_index=True)
         except:
+            print(f"Calc_descr failed for {pdb_id}:{cid}")
+            raise
             continue
     return descrs
 

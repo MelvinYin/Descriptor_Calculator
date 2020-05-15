@@ -154,12 +154,17 @@ class SegmentCalculator:
                     max_score = cand_score
                     max_cand = candidate
             while seg_left >= 0:
-                if score_map[seg_left][max_cand] < top_n_scores[seg_left]:
+                if seg_left in score_map and max_cand in score_map[seg_left] \
+                    and score_map[seg_left][max_cand]< top_n_scores[seg_left]:
                     break
                 seg_left -= 1
             seg_left = max(seg_left, 0)
             for i in range(seg_left, seg_right):
-                candidate_output[i] = [max_cand, score_map[i][max_cand], max_score]
+                if max_cand in score_map[i]:
+                    score_to_add = score_map[i][max_cand]
+                else:
+                    score_to_add = 0.01
+                candidate_output[i] = [max_cand, score_to_add, max_score]
             left_i = seg_left
 
         while right_i <= descr_length - self.extension:
@@ -252,13 +257,25 @@ class MatcherManager:
             return 4, return_val
         p_all_sno = self.matchers[descr].query(return_val)
         return_val_sno = return_val.sno.values
+        residues = return_val.res
+        alphabets = []
+        AA3_to_AA1 = dict(ALA='A', CYS='C', ASP='D', GLU='E', PHE='F', GLY='G',
+                          HIS='H', HSE='H', HSD='H', ILE='I', LYS='K', LEU='L',
+                          MET='M', MSE='M', ASN='N', PRO='P', GLN='Q', ARG='R',
+                          SER='S', THR='T', VAL='V', TRP='W', TYR='Y')
+        for res in residues:
+            if res in AA3_to_AA1:
+                alphabets.append(AA3_to_AA1[res])
+            else:
+                alphabets.append("X")
+        print(alphabets)
         output = dict()
         output['per_point'] = dict()
         for term, values in p_all_sno.items():
             output['per_point'][return_val_sno[term]] = values
 
 
-        return_code, return_val = calculate_single(pdb, cid, seq_marker)
+        # return_code, return_val = calculate_single(pdb, cid, seq_marker)
         assert return_code == 0
         output['generic'] = defaultdict(dict)
         for descr_local, matcher in self.matchers_generic.items():
@@ -284,7 +301,7 @@ class MatcherManager:
 
         output_matcher = os.path.join(paths.MATCHERS, "GxGGxG_matcher_generic.pkl")
         with open(output_matcher, 'rb') as file:
-            matchers['gxgxxg'] = pickle.load(file)
+            matchers['gxggxg'] = pickle.load(file)
 
         output_matcher = os.path.join(paths.MATCHERS, "GxxGxG_matcher_generic.pkl")
         with open(output_matcher, 'rb') as file:
@@ -292,7 +309,7 @@ class MatcherManager:
 
         output_matcher = os.path.join(paths.MATCHERS, "GxGxxG_matcher_generic.pkl")
         with open(output_matcher, 'rb') as file:
-            matchers['gxggxg'] = pickle.load(file)
+            matchers['gxgxxg'] = pickle.load(file)
         return matchers
 
 
@@ -961,6 +978,7 @@ class UI:
 # show(p)
 
 ui = MatcherManager()
+# ui.ui.ui_callback('gxgxxg', '1ZMC', "A", "178")
 curdoc().add_root(ui.figure)
 # show(ui.figure)
 

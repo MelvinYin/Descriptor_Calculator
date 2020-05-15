@@ -212,6 +212,9 @@ def _get_hbond_vector(d_info, a_info, ATOM_HETATM):
     assert len(d_info) == 3
     d_coord = ATOM_HETATM.loc[d_info].coord
     a_coord = ATOM_HETATM.loc[a_info].coord
+    if len(d_coord) != 3:
+        d_coord = d_coord.values[0]
+        a_coord = a_coord.values[0]
     assert len(d_coord) == 3
     assert len(a_coord) == 3
     vector = (d_coord, a_coord)
