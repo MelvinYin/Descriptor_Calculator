@@ -395,7 +395,6 @@ class HbondParser(BaseParser):
             raise RuntimeError(msg)
         with open(hbonds_fname, 'r') as f:
             file_data = [line for line in f]
-        print(file_data)
         os.remove(hbonds_fname)
         return file_data
 

@@ -73,7 +73,130 @@ class SegmentCalculator:
                                       "GxGxxG_matcher.pkl")
         with open(output_matcher, 'rb') as file:
             matchers['gxggxg'] = pickle.load(file)
+
+        output_matcher = os.path.join(paths.MATCHERS, "output_matcher.pkl")
+        with open(output_matcher, 'rb') as file:
+            matchers['single'] = pickle.load(file)
         return matchers
+
+    # def query(self, descr, pdb, cid, seq_marker):
+    #     matcher = self.matchers[descr]
+    #     return_code, return_val = calculate_single(pdb, cid, seq_marker)
+    #     p_all_sno = matcher.query(return_val)
+    #     sno_list = return_val.sno.values
+    #     sno_probs = dict()
+    #     for relative_sno, probs in p_all_sno.items():
+    #         actual_sno = sno_list[relative_sno]
+    #         sno_probs[actual_sno] = probs
+    #
+    #     descr_length = len(sno_probs)
+    #     score_map = [dict() for __ in range(descr_length)]
+    #     top_candidates = set()
+    #     top_n_scores = np.ones(descr_length, dtype=float)
+    #
+    #     for i, probs in enumerate(sno_probs.values()):
+    #         for j, (identifier, score) in enumerate(probs):
+    #             id_str = (identifier[0], identifier[1], identifier[2])
+    #             if j < self.num_top_candidates:
+    #                 top_candidates.add(id_str)
+    #             if j < self.extension_cutoff:
+    #                 top_n_scores[i] = min(top_n_scores[i], score)
+    #             score_map[i][id_str] = score
+    #
+    #     best_scores = []
+    #
+    #     for i in range(descr_length - self.segment_len):
+    #         max_score, max_cand = 0, None
+    #         for candidate in top_candidates:
+    #             cand_score = 0
+    #             for j in range(self.segment_len):
+    #                 try:
+    #                     cand_score += score_map[i + j][candidate]
+    #                 except KeyError:
+    #                     # effectively skip these candidates
+    #                     continue
+    #             if cand_score > max_score:
+    #                 max_score = cand_score
+    #                 max_cand = candidate
+    #         best_scores.append([max_score, max_cand])
+    #
+    #     best_i = np.argmax([i[0] for i in best_scores])
+    #     # to dismiss ide inspection error
+    #     best_i = int(best_i)
+    #     best_candidate = best_scores[best_i][1]
+    #     # extend on both ends
+    #     # to the left
+    #     left_i, right_i = best_i, best_i + self.segment_len
+    #     while left_i > 0:
+    #         if score_map[left_i][best_candidate] < top_n_scores[left_i]:
+    #             break
+    #         left_i -= 1
+    #
+    #     # to the right
+    #     while right_i < descr_length - 1:
+    #         if score_map[right_i][best_candidate] < top_n_scores[right_i]:
+    #             break
+    #         right_i += 1
+    #
+    #     candidate_output = [[] for __ in range(descr_length)]
+    #
+    #     for i in range(left_i, right_i + 1):
+    #         candidate_output[i] = [best_candidate, score_map[i][best_candidate],
+    #                                best_scores[best_i][0]]
+    #
+    #     while left_i >= self.extension:
+    #         seg_left, seg_right = left_i - self.extension, left_i
+    #         max_score, max_cand = 0, None
+    #         for candidate in top_candidates:
+    #             cand_score = 0
+    #             for j in range(seg_left, seg_right):
+    #                 try:
+    #                     cand_score += score_map[j][candidate]
+    #                 except KeyError:
+    #                     continue
+    #             if cand_score > max_score:
+    #                 max_score = cand_score
+    #                 max_cand = candidate
+    #         while seg_left >= 0:
+    #             if seg_left in score_map and max_cand in score_map[seg_left] \
+    #                 and score_map[seg_left][max_cand]< top_n_scores[seg_left]:
+    #                 break
+    #             seg_left -= 1
+    #         seg_left = max(seg_left, 0)
+    #         for i in range(seg_left, seg_right):
+    #             if max_cand in score_map[i]:
+    #                 score_to_add = score_map[i][max_cand]
+    #             else:
+    #                 score_to_add = 0.01
+    #             candidate_output[i] = [max_cand, score_to_add, max_score]
+    #         left_i = seg_left
+    #
+    #     while right_i <= descr_length - self.extension:
+    #         seg_left, seg_right = right_i, right_i + self.extension
+    #         max_score, max_cand = 0, None
+    #         for candidate in top_candidates:
+    #             cand_score = 0
+    #             for j in range(seg_left, seg_right):
+    #                 try:
+    #                     cand_score += score_map[j][candidate]
+    #                 except KeyError:
+    #                     continue
+    #             if cand_score > max_score:
+    #                 max_score = cand_score
+    #                 max_cand = candidate
+    #         while seg_right < descr_length:
+    #             if score_map[seg_right][max_cand] < top_n_scores[seg_right]:
+    #                 break
+    #             seg_right += 1
+    #
+    #         for i in range(seg_left, seg_right):
+    #             candidate_output[i] = [max_cand, score_map[i][max_cand], max_score]
+    #         right_i = seg_right
+    #
+    #     mapped_output = dict()
+    #     for sno, value in zip(sno_probs.keys(), candidate_output):
+    #         mapped_output[sno] = value
+    #     return mapped_output
 
     def query(self, descr, pdb, cid, seq_marker):
         matcher = self.matchers[descr]
@@ -92,15 +215,15 @@ class SegmentCalculator:
 
         for i, probs in enumerate(sno_probs.values()):
             for j, (identifier, score) in enumerate(probs):
+                # if identifier[0] not in ("1a5z", "2bi7", "2cul", "1ps9",
+                #                          "1jwb", "1lua"):
+                #     continue
                 id_str = (identifier[0], identifier[1], identifier[2])
-                if j < self.num_top_candidates:
-                    top_candidates.add(id_str)
-                if j < self.extension_cutoff:
-                    top_n_scores[i] = min(top_n_scores[i], score)
+                top_candidates.add(id_str)
+                top_n_scores[i] = min(top_n_scores[i], score)
                 score_map[i][id_str] = score
 
         best_scores = []
-
         for i in range(descr_length - self.segment_len):
             max_score, max_cand = 0, None
             for candidate in top_candidates:
@@ -115,25 +238,23 @@ class SegmentCalculator:
                     max_score = cand_score
                     max_cand = candidate
             best_scores.append([max_score, max_cand])
-
         best_i = np.argmax([i[0] for i in best_scores])
         # to dismiss ide inspection error
         best_i = int(best_i)
         best_candidate = best_scores[best_i][1]
         # extend on both ends
         # to the left
+
         left_i, right_i = best_i, best_i + self.segment_len
         while left_i > 0:
             if score_map[left_i][best_candidate] < top_n_scores[left_i]:
                 break
             left_i -= 1
-
         # to the right
         while right_i < descr_length - 1:
             if score_map[right_i][best_candidate] < top_n_scores[right_i]:
                 break
             right_i += 1
-
         candidate_output = [[] for __ in range(descr_length)]
 
         for i in range(left_i, right_i + 1):
@@ -155,7 +276,8 @@ class SegmentCalculator:
                     max_cand = candidate
             while seg_left >= 0:
                 if seg_left in score_map and max_cand in score_map[seg_left] \
-                    and score_map[seg_left][max_cand]< top_n_scores[seg_left]:
+                        and \
+                        score_map[seg_left][max_cand] < top_n_scores[seg_left]:
                     break
                 seg_left -= 1
             seg_left = max(seg_left, 0)
@@ -166,7 +288,6 @@ class SegmentCalculator:
                     score_to_add = 0.01
                 candidate_output[i] = [max_cand, score_to_add, max_score]
             left_i = seg_left
-
         while right_i <= descr_length - self.extension:
             seg_left, seg_right = right_i, right_i + self.extension
             max_score, max_cand = 0, None
@@ -186,13 +307,13 @@ class SegmentCalculator:
                 seg_right += 1
 
             for i in range(seg_left, seg_right):
-                candidate_output[i] = [max_cand, score_map[i][max_cand], max_score]
+                candidate_output[i] = [max_cand, score_map[i][max_cand],
+                                       max_score]
             right_i = seg_right
 
         mapped_output = dict()
         for sno, value in zip(sno_probs.keys(), candidate_output):
             mapped_output[sno] = value
-
         return mapped_output
 
 class ButtonComponent:
@@ -274,9 +395,10 @@ class MatcherManager:
         for term, values in p_all_sno.items():
             output['per_point'][return_val_sno[term]] = values
 
-
         # return_code, return_val = calculate_single(pdb, cid, seq_marker)
-        assert return_code == 0
+        if return_code != 0:
+            print(f"in _ui_callback, return_code is {return_code}")
+            raise Exception
         output['generic'] = defaultdict(dict)
         for descr_local, matcher in self.matchers_generic.items():
             p_all_sno = matcher.query(return_val)
@@ -334,6 +456,10 @@ class MatcherManager:
         output_matcher = os.path.join(paths.MATCHERS, "GxGxxG_matcher.pkl")
         with open(output_matcher, 'rb') as file:
             matchers['gxggxg'] = pickle.load(file)
+
+        output_matcher = os.path.join(paths.MATCHERS, "output_matcher.pkl")
+        with open(output_matcher, 'rb') as file:
+            matchers['single'] = pickle.load(file)
         return matchers
 
 
@@ -374,6 +500,10 @@ class IndividualFigure:
         url = os.path.join(os.path.basename(os.path.dirname(__file__)),
                            "static", "mg_logo.png")
         mapping['mg'] = url
+
+        url = os.path.join(os.path.basename(os.path.dirname(__file__)),
+                           "static", "gxgxxg_logo.png")
+        mapping['single'] = url
         return mapping
 
     def _set_logo_CDS(self):
@@ -644,12 +774,22 @@ class UI:
         best_match = defaultdict(int)
         track_first_resno = dict()
         p_per_point = results['per_point']
-        assert len(p_per_point) == 30
+
+        if len(p_per_point) != 30:
+            print(f"in set_result_callback, len(p_per_point) != 30, is {len(p_per_point)}")
+            raise Exception
+
         for i, (sno, p) in enumerate(p_per_point.items()):
             _matches = []
             for j, term in enumerate(p[:3]):
-                assert len(term) == 2
-                assert len(term[0]) == 3
+                if len(term) != 2:
+                    print(f"in set_result_callback, len(term) != 2, "
+                        f"is {term}")
+                    raise Exception
+                if len(term[0]) != 3:
+                    print(f"in set_result_callback, len(term[0]) != 3, "
+                          f"is {term[0]}")
+                    raise Exception
                 index = i * 3 + j
                 pdb_id, start_resno, cid = term[0]
                 match_value = term[1]
@@ -692,32 +832,36 @@ class UI:
                 summary_patch['match_vals'].append((i, ""))
         self.summary_CDS.patch(summary_patch)
 
-        assert self.descr_value in results['generic']
-        p_generic = results['generic'][self.descr_value]
-        descr_match_patch = defaultdict(list)
-        summed_descr_score = sum(p_generic.values())
-        descr_match_patch['resno'].append((0, "Total"))
-        descr_match_patch['match_vals'].append(
-            (0, "{0:.3f}".format(summed_descr_score)))
-        for i, (sno, p) in enumerate(p_generic.items()):
-            i += 1
-            descr_match_patch['resno'].append((i, sno))
-            descr_match_patch['match_vals'].append(
-                (i, "{0:.3f}".format(p)))
-        self.descr_match_CDS.patch(descr_match_patch)
-        all_descr_patch = defaultdict(list)
-        scores = []
-        for i, (descr, values) in enumerate(results['generic'].items()):
-            summed_descr_score = sum(values.values())
-            scores.append((self.descr_key_title_map[descr], summed_descr_score))
 
-        sorted_i = np.argsort([i[1] for i in scores])[::-1]
-        for i in range(len(sorted_i)):
-            selected_i = sorted_i[i]
-            all_descr_patch['descr'].append((i, scores[selected_i][0]))
-            all_descr_patch['score'].append((i, "{0:.3f}".format(scores[
-                                                                     selected_i][1])))
-        self.all_descr_CDS.patch(all_descr_patch)
+        if self.descr_value not in results['generic']:
+            print(f"WARNING: self.descr_value not in results['generic'], "
+                  f"{self.descr_value}")
+        else:
+            p_generic = results['generic'][self.descr_value]
+            descr_match_patch = defaultdict(list)
+            summed_descr_score = sum(p_generic.values())
+            descr_match_patch['resno'].append((0, "Total"))
+            descr_match_patch['match_vals'].append(
+                (0, "{0:.3f}".format(summed_descr_score)))
+            for i, (sno, p) in enumerate(p_generic.items()):
+                i += 1
+                descr_match_patch['resno'].append((i, sno))
+                descr_match_patch['match_vals'].append(
+                    (i, "{0:.3f}".format(p)))
+            self.descr_match_CDS.patch(descr_match_patch)
+            all_descr_patch = defaultdict(list)
+            scores = []
+            for i, (descr, values) in enumerate(results['generic'].items()):
+                summed_descr_score = sum(values.values())
+                scores.append((self.descr_key_title_map[descr], summed_descr_score))
+
+            sorted_i = np.argsort([i[1] for i in scores])[::-1]
+            for i in range(len(sorted_i)):
+                selected_i = sorted_i[i]
+                all_descr_patch['descr'].append((i, scores[selected_i][0]))
+                all_descr_patch['score'].append((i, "{0:.3f}".format(scores[
+                                                                         selected_i][1])))
+            self.all_descr_CDS.patch(all_descr_patch)
 
         segment_scores = results['segment']
         segment_plot_patch = defaultdict(list)
@@ -892,6 +1036,7 @@ class UI:
         mapping['gxgxxg'] = 'GxGxxG'
         mapping['gxxgxg'] = 'GxxGxG'
         mapping['gxggxg'] = 'GxGGxG'
+        mapping['single'] = 'single'
         return mapping
 
     def _build_descr_dropdown(self):
@@ -901,7 +1046,8 @@ class UI:
                                                ['mg', 'MG-Binding DxDxDG'],
                                                ['gxgxxg', 'GxGxxG'],
                                                ['gxxgxg', 'GxxGxG'],
-                                               ['gxggxg', 'GxGGxG']]
+                                               ['gxggxg', 'GxGGxG'],
+                                               ['single', 'single']]
         descriptor_dropdown_options['width'] = 123
         descriptor_dropdown_options['height'] = 50
         dropdown = DropDownComponent(descriptor_dropdown_options, self._set_descr_value)

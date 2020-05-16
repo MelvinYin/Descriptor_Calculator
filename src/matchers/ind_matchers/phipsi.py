@@ -28,8 +28,8 @@ class _PhipsiMatcher:
         phipsis = phipsis - phipsi_median
         phipsis[phipsis > 180] -= 360.
         phipsis[phipsis < -180] += 360.
-
-        gm_ = GM(n_components=30)
+        num_component = min(30, self.length)
+        gm_ = GM(n_components=num_component)
         gm_.fit(X=phipsis)
         weights = gm_.weights_
         to_keep = weights > 0.05

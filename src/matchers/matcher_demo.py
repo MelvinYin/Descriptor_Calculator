@@ -95,15 +95,26 @@ def load_matchers():
     #     pickle.dump(matcher, file, -1)
     # print("GxxGxG_descr done")
     #
-    input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
-    output_matcher = os.path.join(paths.MATCHERS, "GxGxxG_matcher.pkl")
+    # input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
+    # output_matcher = os.path.join(paths.MATCHERS, "GxGxxG_matcher.pkl")
+    # with open(input_df, 'rb', -1) as file:
+    #     df = pickle.load(file)
+    # matcher = Matcher(cropped=False)
+    # matcher.load(df)
+    # with open(output_matcher, 'wb') as file:
+    #     pickle.dump(matcher, file, -1)
+    # print("GxGxxG_descr done")
+
+    input_df = os.path.join(paths.DESCRS, "output_descr.pkl")
+    output_matcher = os.path.join(paths.MATCHERS, "output_matcher.pkl")
     with open(input_df, 'rb', -1) as file:
         df = pickle.load(file)
+    print(np.unique(df['filename']))
     matcher = Matcher(cropped=False)
     matcher.load(df)
     with open(output_matcher, 'wb') as file:
         pickle.dump(matcher, file, -1)
-    print("GxGxxG_descr done")
+    print("output_descr done")
     pass
 
 if __name__ == "__main__":

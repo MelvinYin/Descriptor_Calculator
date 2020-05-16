@@ -43,8 +43,6 @@ def main(input_path, output_path):
     # Switching back to pkl to avoid false float comparison failures.
     # with open(os.path.join(paths.ROOT, "final_descr_output_orig.pkl"),
     import numpy as np
-    print(descrs.columns)
-    print(np.unique(descrs['filename'], return_counts=True))
     with open(output_path, "wb") as file:
         pickle.dump(descrs, file, -1)
 

@@ -70,6 +70,7 @@ def get_info_for(pdb_code):
             if get_success:
                 get_success = loaders.load_pdb_info(pdb_code)
         if not get_success:
+            print(f"get_info_for(pdb_code) failed for {pdb_code}")
             logging.warning(f"Loading of pdb file {pdb_suffix} fails.")
             return None
         pdb_paths.PDB_PARSED_SET.add(pdb_suffix + ".pkl")
