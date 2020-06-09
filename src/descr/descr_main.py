@@ -13,13 +13,14 @@ def calculate_single(pdb_id, cid, seq_marker):
     seq_marker = int(seq_marker)
     pdb_data = pdb_interface.get_info_for(pdb_id)
     if pdb_data is None:
-        return [1, f"PDB file download fail for {pdb_id}."]
+        raise Exception(f"PDB file download fail for {pdb_id}.")
     ATOM, HETATM, hb = pdb_data
     try:
         dsr_snos = _get_sno_range(ATOM, cid, seq_marker)
         if dsr_snos is None or len(dsr_snos) != 30 or dsr_snos[0] != seq_marker:
-            return [2, f"ATOM lines not found in range({seq_marker}, "
-                       f"{seq_marker+30}) for {pdb_id}:{cid}.<br>"]
+            msg = f"ATOM lines not found in range({seq_marker}, "
+            f"{seq_marker + 30}) for {pdb_id}:{cid}.<br>"
+            raise Exception(msg)
         res, C, CA, N = _from_considered_elements_single(ATOM, dsr_snos, cid)
         pept_bonds = _get_pept_bonds(CA, dsr_snos)
         # For filling descr df
@@ -37,10 +38,10 @@ def calculate_single(pdb_id, cid, seq_marker):
 
         full_descr = _add_columns(descr, pdb_id, seq_marker, cid)
     except Exception as e:
-        error_msg = f"Exception caught in descriptor calculation. Traceback: " \
-                    f"<{traceback.format_exc()}>. Error: <{e}>"
-        return [3, error_msg]
-    return [0, full_descr]
+        msg = f"Exception caught in descriptor calculation. Traceback: " \
+              f"<{traceback.format_exc()}>. Error: <{e}>"
+        raise Exception(msg)
+    return full_descr
 
 def calculate(motif_pos_map):
     descrs = pd.DataFrame()

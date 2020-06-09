@@ -18,13 +18,7 @@ def get_matcher():
     return matchers['ef']
 
 def _ui_callback(pdb, cid, seq_marker, matcher):
-    return_code, return_val = calculate_single(pdb, cid, seq_marker)
-    if return_code == 1:
-        return 2, return_val
-    if return_code == 2:
-        return 3, return_val
-    if return_code == 3:
-        return 4, return_val
+    return_val = calculate_single(pdb, cid, seq_marker)
     p_all_sno = matcher.query(return_val)
     return_val_sno = return_val.sno.values
     output = dict()

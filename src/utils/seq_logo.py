@@ -7,8 +7,12 @@ Call _to_align to align each individual text character.
 Adapted from https://stackoverflow.com/questions/42615527/sequence-logos-in-
 matplotlib-aligning-xticks, with color properties taken from weblogo.
 """
-
+# import matplotlib
+#
+# matplotlib.use('TkAgg')
 from enum import Enum, auto
+
+from utils.generic import AA3_to_AA1
 
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import PathPatch
@@ -30,19 +34,11 @@ class Logo:
         self._title = title
         self._init_pos = init_pos
         self._convert_AA3 = convert_AA3
-        self._AA3_to_AA1 = self.get_AA3_to_AA1()
         self._colorcode = self.get_colorcode()
         self._res_grp_map = self.get_res_grp_map()
         self._letter_to_glyph = self.get_letter_to_glyph()
         self._figsize = figsize
         self.plot = self.get_plot(data)
-
-    def get_AA3_to_AA1(self):
-        AA3_to_AA1 = dict(ALA='A', CYS='C', ASP='D', GLU='E', PHE='F', GLY='G',
-                          HIS='H', HSE='H', HSD='H', ILE='I', LYS='K', LEU='L',
-                          MET='M', MSE='M', ASN='N', PRO='P', GLN='Q', ARG='R',
-                          SER='S', THR='T', VAL='V', TRP='W', TYR='Y')
-        return AA3_to_AA1
 
     def get_colorcode(self):
         colorcode = dict()
@@ -112,7 +108,7 @@ class Logo:
 
     def add_patch(self, AA3, x, y, yscale, ax):
         if self._convert_AA3:
-            AA1 = self._AA3_to_AA1[AA3]
+            AA1 = AA3_to_AA1[AA3]
         else:
             AA1 = AA3
         glyph = self._letter_to_glyph[AA1]
@@ -135,9 +131,27 @@ def _to_align():
     per_count = 1/length
     for i in AA3_to_AA1.keys():
         data[0].append((i, per_count))
-    plot = Logo(data, -1, (5, 20)).plot
+    plot = Logo(data, -1, (5, 20)).plot[1]
     plot.legend().remove()
     plot.axvline(-1)
     plot.axvline(-1.478)
     plot.axvline(-0.499)
     plt.show()
+
+# data = []
+# for i in range(30):
+#     data.append([("ALA", 1)])
+# fig, plot = Logo(data, -1, (30, 1)).plot
+# plot.legend().remove()
+# plt.axis('off')
+# plt.gca().xaxis.set_major_locator(plt.NullLocator())
+# plt.gca().yaxis.set_major_locator(plt.NullLocator())
+# from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+# canvas = FigureCanvas(fig)
+# canvas.draw()
+# s, (width, height) = canvas.print_to_buffer()
+# a = np.fromstring(s, np.uint8).reshape((height, width, 4))
+# a = a[13:-11, 398:-315, :]
+# plt.imsave('tmp.png', a)
+# plt.savefig('tmp', bbox_inches='tight', pad_inches=0)
+# plt.show()

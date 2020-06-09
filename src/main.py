@@ -31,7 +31,6 @@ def main(input_path, output_path):
     motif_pos_path = input_path
     with open(motif_pos_path, 'rb') as file:
         motif_pos_map = pickle.load(file)
-    print(list(motif_pos_map.keys()))
     timecheck = time()
     descrs = descr_main.calculate(motif_pos_map)
     print(f"Time taken: {time() - timecheck}")

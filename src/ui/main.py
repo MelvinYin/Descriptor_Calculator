@@ -1,26 +1,20 @@
-import matplotlib.pyplot as plt
-# import matplotlib
-#
-# matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
+import traceback
 import sys
 import inspect
 src_path = inspect.currentframe().f_code.co_filename.rsplit("/", maxsplit=2)[0]
 sys.path.append(src_path)
-from bokeh.plotting import figure, show, ColumnDataSource
-from bokeh.models.widgets import Div, RadioButtonGroup, Select, Button, \
-    HTMLTemplateFormatter
-from bokeh.models.widgets import DataTable, DateFormatter, TableColumn
+from utils.generic import AA3_to_AA1
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from utils.seq_logo import Logo
+from bokeh.models.widgets import Select, Button, HTMLTemplateFormatter
 import os
 import pickle
 from bokeh.models.widgets import TextInput
-from bokeh.plotting import show, curdoc
-from bokeh.layouts import row, column
 from collections import defaultdict
 import heapq
 from bokeh.palettes import Category10
 from config import paths
-from pdb_component import pdb_interface
 from descr.descr_main import calculate_single
 import numpy as np
 from collections import OrderedDict
@@ -34,7 +28,6 @@ import inspect
 from enum import Enum
 from bokeh.layouts import row, column
 from bokeh.models.widgets import Paragraph, Div
-from bokeh.models.layouts import WidgetBox, Spacer
 from bokeh.models import DataTable, TableColumn, ColumnDataSource
 
 
@@ -79,128 +72,14 @@ class SegmentCalculator:
             matchers['single'] = pickle.load(file)
         return matchers
 
-    # def query(self, descr, pdb, cid, seq_marker):
-    #     matcher = self.matchers[descr]
-    #     return_code, return_val = calculate_single(pdb, cid, seq_marker)
-    #     p_all_sno = matcher.query(return_val)
-    #     sno_list = return_val.sno.values
-    #     sno_probs = dict()
-    #     for relative_sno, probs in p_all_sno.items():
-    #         actual_sno = sno_list[relative_sno]
-    #         sno_probs[actual_sno] = probs
-    #
-    #     descr_length = len(sno_probs)
-    #     score_map = [dict() for __ in range(descr_length)]
-    #     top_candidates = set()
-    #     top_n_scores = np.ones(descr_length, dtype=float)
-    #
-    #     for i, probs in enumerate(sno_probs.values()):
-    #         for j, (identifier, score) in enumerate(probs):
-    #             id_str = (identifier[0], identifier[1], identifier[2])
-    #             if j < self.num_top_candidates:
-    #                 top_candidates.add(id_str)
-    #             if j < self.extension_cutoff:
-    #                 top_n_scores[i] = min(top_n_scores[i], score)
-    #             score_map[i][id_str] = score
-    #
-    #     best_scores = []
-    #
-    #     for i in range(descr_length - self.segment_len):
-    #         max_score, max_cand = 0, None
-    #         for candidate in top_candidates:
-    #             cand_score = 0
-    #             for j in range(self.segment_len):
-    #                 try:
-    #                     cand_score += score_map[i + j][candidate]
-    #                 except KeyError:
-    #                     # effectively skip these candidates
-    #                     continue
-    #             if cand_score > max_score:
-    #                 max_score = cand_score
-    #                 max_cand = candidate
-    #         best_scores.append([max_score, max_cand])
-    #
-    #     best_i = np.argmax([i[0] for i in best_scores])
-    #     # to dismiss ide inspection error
-    #     best_i = int(best_i)
-    #     best_candidate = best_scores[best_i][1]
-    #     # extend on both ends
-    #     # to the left
-    #     left_i, right_i = best_i, best_i + self.segment_len
-    #     while left_i > 0:
-    #         if score_map[left_i][best_candidate] < top_n_scores[left_i]:
-    #             break
-    #         left_i -= 1
-    #
-    #     # to the right
-    #     while right_i < descr_length - 1:
-    #         if score_map[right_i][best_candidate] < top_n_scores[right_i]:
-    #             break
-    #         right_i += 1
-    #
-    #     candidate_output = [[] for __ in range(descr_length)]
-    #
-    #     for i in range(left_i, right_i + 1):
-    #         candidate_output[i] = [best_candidate, score_map[i][best_candidate],
-    #                                best_scores[best_i][0]]
-    #
-    #     while left_i >= self.extension:
-    #         seg_left, seg_right = left_i - self.extension, left_i
-    #         max_score, max_cand = 0, None
-    #         for candidate in top_candidates:
-    #             cand_score = 0
-    #             for j in range(seg_left, seg_right):
-    #                 try:
-    #                     cand_score += score_map[j][candidate]
-    #                 except KeyError:
-    #                     continue
-    #             if cand_score > max_score:
-    #                 max_score = cand_score
-    #                 max_cand = candidate
-    #         while seg_left >= 0:
-    #             if seg_left in score_map and max_cand in score_map[seg_left] \
-    #                 and score_map[seg_left][max_cand]< top_n_scores[seg_left]:
-    #                 break
-    #             seg_left -= 1
-    #         seg_left = max(seg_left, 0)
-    #         for i in range(seg_left, seg_right):
-    #             if max_cand in score_map[i]:
-    #                 score_to_add = score_map[i][max_cand]
-    #             else:
-    #                 score_to_add = 0.01
-    #             candidate_output[i] = [max_cand, score_to_add, max_score]
-    #         left_i = seg_left
-    #
-    #     while right_i <= descr_length - self.extension:
-    #         seg_left, seg_right = right_i, right_i + self.extension
-    #         max_score, max_cand = 0, None
-    #         for candidate in top_candidates:
-    #             cand_score = 0
-    #             for j in range(seg_left, seg_right):
-    #                 try:
-    #                     cand_score += score_map[j][candidate]
-    #                 except KeyError:
-    #                     continue
-    #             if cand_score > max_score:
-    #                 max_score = cand_score
-    #                 max_cand = candidate
-    #         while seg_right < descr_length:
-    #             if score_map[seg_right][max_cand] < top_n_scores[seg_right]:
-    #                 break
-    #             seg_right += 1
-    #
-    #         for i in range(seg_left, seg_right):
-    #             candidate_output[i] = [max_cand, score_map[i][max_cand], max_score]
-    #         right_i = seg_right
-    #
-    #     mapped_output = dict()
-    #     for sno, value in zip(sno_probs.keys(), candidate_output):
-    #         mapped_output[sno] = value
-    #     return mapped_output
-
     def query(self, descr, pdb, cid, seq_marker):
         matcher = self.matchers[descr]
-        return_code, return_val = calculate_single(pdb, cid, seq_marker)
+        try:
+            return_val = calculate_single(pdb, cid, seq_marker)
+        except:
+            msg = f"query failed with error {traceback.format_exc()}"
+            raise Exception(msg)
+
         p_all_sno = matcher.query(return_val)
         sno_list = return_val.sno.values
         sno_probs = dict()
@@ -215,12 +94,11 @@ class SegmentCalculator:
 
         for i, probs in enumerate(sno_probs.values()):
             for j, (identifier, score) in enumerate(probs):
-                # if identifier[0] not in ("1a5z", "2bi7", "2cul", "1ps9",
-                #                          "1jwb", "1lua"):
-                #     continue
                 id_str = (identifier[0], identifier[1], identifier[2])
-                top_candidates.add(id_str)
-                top_n_scores[i] = min(top_n_scores[i], score)
+                if j < self.num_top_candidates:
+                    top_candidates.add(id_str)
+                if j < self.extension_cutoff:
+                    top_n_scores[i] = min(top_n_scores[i], score)
                 score_map[i][id_str] = score
 
         best_scores = []
@@ -232,7 +110,7 @@ class SegmentCalculator:
                     try:
                         cand_score += score_map[i + j][candidate]
                     except KeyError:
-                        # effectively skip these candidates
+                        # skip these candidates
                         continue
                 if cand_score > max_score:
                     max_score = cand_score
@@ -244,7 +122,6 @@ class SegmentCalculator:
         best_candidate = best_scores[best_i][1]
         # extend on both ends
         # to the left
-
         left_i, right_i = best_i, best_i + self.segment_len
         while left_i > 0:
             if score_map[left_i][best_candidate] < top_n_scores[left_i]:
@@ -363,53 +240,50 @@ class MatcherManager:
         self.segment_calculater = SegmentCalculator()
         self.ui = UI(self._ui_callback)
         self.figure = self.ui.figure
+        self.ui.ui_callback('ef', '1a29', 'A', '12')
 
     def _ui_callback(self, descr, pdb, cid, seq_marker):
         if descr not in self.matchers:
-            error_msg = f"Exception: {descr} not found in list of matches. " \
+            error_msg = f"{descr} not found in list of matches. " \
                         f"This is an internal error."
-            return 1, error_msg
-        return_code, return_val = calculate_single(pdb, cid, seq_marker)
-        if return_code == 1:
-            return 2, return_val
-        if return_code == 2:
-            return 3, return_val
-        if return_code == 3:
-            return 4, return_val
+            raise Exception(error_msg)
+        return_val = calculate_single(pdb, cid, seq_marker)
         p_all_sno = self.matchers[descr].query(return_val)
         return_val_sno = return_val.sno.values
         residues = return_val.res
+        output = dict()
         alphabets = []
-        AA3_to_AA1 = dict(ALA='A', CYS='C', ASP='D', GLU='E', PHE='F', GLY='G',
-                          HIS='H', HSE='H', HSD='H', ILE='I', LYS='K', LEU='L',
-                          MET='M', MSE='M', ASN='N', PRO='P', GLN='Q', ARG='R',
-                          SER='S', THR='T', VAL='V', TRP='W', TYR='Y')
+        # for res in residues:
+        #     if res in AA3_to_AA1:
+        #         alphabets.append(AA3_to_AA1[res])
+        #     else:
+        #         alphabets.append("X")
         for res in residues:
             if res in AA3_to_AA1:
-                alphabets.append(AA3_to_AA1[res])
+                alphabets.append(res)
             else:
-                alphabets.append("X")
-        print(alphabets)
-        output = dict()
+                alphabets.append("TYR")
+        output['alphabet'] = alphabets
         output['per_point'] = dict()
         for term, values in p_all_sno.items():
             output['per_point'][return_val_sno[term]] = values
 
-        # return_code, return_val = calculate_single(pdb, cid, seq_marker)
-        if return_code != 0:
-            print(f"in _ui_callback, return_code is {return_code}")
-            raise Exception
         output['generic'] = defaultdict(dict)
         for descr_local, matcher in self.matchers_generic.items():
             p_all_sno = matcher.query(return_val)
             return_val_sno = return_val.sno.values
             for term, values in p_all_sno.items():
                 output['generic'][descr_local][return_val_sno[term]] = values
-
-        segmented_scores = self.segment_calculater.query(descr, pdb, cid,
-                                                     seq_marker)
-        output['segment'] = segmented_scores
-        return 0, output
+        try:
+            segmented_scores = self.segment_calculater.query(descr, pdb, cid,
+                                                         seq_marker)
+        except:
+            print(f"segment_calculater.query failed with error"
+                  f" {traceback.format_exc()}")
+            output['segment'] = None
+        else:
+            output['segment'] = segmented_scores
+        return output
 
     def _load_matchers_generic(self):
         matchers = dict()
@@ -433,7 +307,6 @@ class MatcherManager:
         with open(output_matcher, 'rb') as file:
             matchers['gxgxxg'] = pickle.load(file)
         return matchers
-
 
     def _load_matchers(self):
         matchers = dict()
@@ -473,11 +346,13 @@ class IndividualFigure:
         self.plot_legend_CDS = self._init_plot_legend_CDS()
         self.legend_table_header = self._build_plot_legend_table_header()
         self.legend_table = self._build_plot_legend_table()
-        # self.tick_label_map = self._get_initial_ticks_label_mapping()
         self.figure, self.fig_x_range, self.fig_x_ticker = \
             self._set_initial_figure()
         self.logo_CDS = self._set_logo_CDS()
         self.logo = self._set_logo()
+
+        # self.single_logo_CDS = self._set_single_logo_CDS()
+        # self.single_logo = self._set_single_logo()
         self.full_figure = self._build_full_fig()
 
     def _set_url_descr_map(self):
@@ -500,16 +375,28 @@ class IndividualFigure:
         url = os.path.join(os.path.basename(os.path.dirname(__file__)),
                            "static", "mg_logo.png")
         mapping['mg'] = url
-
         url = os.path.join(os.path.basename(os.path.dirname(__file__)),
                            "static", "gxgxxg_logo.png")
         mapping['single'] = url
+
+        # url = os.path.join(os.path.basename(os.path.dirname(__file__)),
+        #                    "static", "single_logo.png")
+        # mapping['single_logo'] = url
+        #
+        # url = os.path.join(os.path.basename(os.path.dirname(__file__)),
+        #                    "static", "single_logo2.png")
+        # mapping['single_logo2'] = url
         return mapping
 
     def _set_logo_CDS(self):
         data = dict(url=[self.url_descr_map['init']], x=[0])
         source = ColumnDataSource(data)
         return source
+
+    # def _set_single_logo_CDS(self):
+    #     data = dict(url=[self.url_descr_map['single_logo']], x=[0])
+    #     source = ColumnDataSource(data)
+    #     return source
 
 
     def _build_plot_legend_table(self):
@@ -591,6 +478,25 @@ class IndividualFigure:
         p.yaxis.axis_label = 'Information Bits'
         return p
 
+    # def _set_single_logo(self):
+    #     boxzoom = BoxZoomTool()
+    #     pan = PanTool(dimensions='width')
+    #     wheelzoom = WheelZoomTool(dimensions='width')
+    #     reset = ResetTool()
+    #     undo = UndoTool()
+    #     tools = [pan, boxzoom, wheelzoom, reset, undo]
+    #     p = figure(width=1000, height=120, tools=tools)
+    #     glyph = ImageURL(url="url", x='x', y=4.3, w=30, h=4.4)
+    #     p.add_glyph(self.single_logo_CDS, glyph)
+    #     p.x_range = self.fig_x_range
+    #     p.y_range = Range1d(start=0, end=4.4)
+    #     p.toolbar.active_drag = pan
+    #     p.toolbar.logo = None
+    #     p.xaxis.ticker = self.fig_x_ticker
+    #     p.xaxis.axis_label = 'Residue Position'
+    #     p.yaxis.axis_label = 'Information Bits'
+    #     return p
+
     def _set_initial_figure(self):
         boxzoom = BoxZoomTool()
         pan = PanTool(dimensions='width')
@@ -645,6 +551,33 @@ class IndividualFigure:
         return ticker
 
     def figure_update(self, data):
+        data_logo = []
+        for i in range(30):
+            data_logo.append([(data["logo"][i], 1)])
+        fig, plot = Logo(data_logo, -1, (30, 1)).plot
+        plot.legend().remove()
+        plt.axis('off')
+        plt.gca().xaxis.set_major_locator(plt.NullLocator())
+        plt.gca().yaxis.set_major_locator(plt.NullLocator())
+        canvas = FigureCanvas(fig)
+        canvas.draw()
+        s, (width, height) = canvas.print_to_buffer()
+        a = np.fromstring(s, np.uint8).reshape((height, width, 4))
+        a = a[13:-11, 398:-315, :]
+        # if self.single_logo_CDS.data['url'][0] == self.url_descr_map[
+        #     'single_logo']:
+        #     logo_url = self.url_descr_map['single_logo2']
+        # else:
+        #     logo_url = self.url_descr_map['single_logo']
+        # plt.imsave(logo_url, a)
+        # # plt.savefig(self.url_descr_map['single_logo'],
+        # #             bbox_inches='tight', pad_inches=0)
+        # # single_logo_patch = dict()
+        # # single_logo_patch['url'] = [(0, self.url_descr_map['single_logo'])]
+        # # self.single_logo_CDS.patch()
+        # self.single_logo_CDS.data['url'] = [logo_url]
+        # self.single_logo_CDS.data['x'] = [data['xs'][0] - 0.5]
+
         self.curr_descr = data['descr']
         patch = defaultdict(list)
         seen_pdbs = OrderedDict()
@@ -659,7 +592,10 @@ class IndividualFigure:
             else:
                 seen_pdbs[id_value] = 1
             indice = min([len(seen_pdbs) - 1, 9])
-            assert indice < len(Category10[10]), indice
+            if indice >= len(Category10[10]):
+                msg = f"figure_update failed with error " \
+                      f"indice >= len(Category10[10]), {traceback.format_exc()}"
+                raise Exception(msg)
             patch['color'].append(Category10[10][indice])
             patch['xs'].append(xs_update[i])
             patch['ys'].append(ys_update[i])
@@ -671,9 +607,11 @@ class IndividualFigure:
             patch_line['color_line'].append(Category10[10][i])
             patch_line['xs_line'].append(patch['xs'][count:count+value])
             patch_line['ys_line'].append(patch['ys'][count:count + value])
-
             patch_legend['color'].append(Category10[10][i])
-            assert len(key) == 3
+            if len(key) != 3:
+                msg = f"figure_update failed with error " \
+                      f"len(key) != 3, {traceback.format_exc()}"
+                raise Exception(msg)
             patch_legend['pdb'].append(key[0])
             patch_legend['resno'].append(key[1])
             patch_legend['cid'].append(key[2])
@@ -691,6 +629,7 @@ class IndividualFigure:
         self.logo_CDS.data['url'] = [self.url_descr_map[self.curr_descr]]
         self.logo_CDS.data['x'] = [data['xs'][0] - 0.5]
         self.logo.xaxis.ticker = x_ticker
+        # self.single_logo.xaxis.ticker = x_ticker
         return True
 
 
@@ -707,7 +646,6 @@ class UI:
         self.summary_CDS = self._init_summary_CDS()
         self.descr_match_CDS = self._init_descr_match_CDS()
         self.all_descr_CDS = self._init_all_descr_CDS()
-
 
         self.console_header = self._build_console_header()
         self.console = self._build_console()
@@ -749,135 +687,151 @@ class UI:
 
     def add_to_console(self, message):
         self.console.figure.text += message
+        print(message)
 
     def set_result_callback(self, *args):
-        print("pre_ui_callback")
-        if self.descr_value is None or self.pdb_value is None or \
-                self.cid_value is None or self.seq_start_value is None:
-            e_msg = f"<br>One of the input values is None, please try again.<br>"
-            self.add_to_console(e_msg)
-            return
-        msg = f"<br>Called with args descr_value: [{self.descr_value}], " \
-              f"pdb_value: [{self.pdb_value}], cid_value: [{self.cid_value}]," \
-              f" seq_start_value: [{self.seq_start_value}].<br>"
-        print(msg)
-        self.add_to_console(msg)
-        ret_code, results = self.ui_callback(self.descr_value, self.pdb_value,
-                                    self.cid_value, self.seq_start_value)
-        print("post_ui_callback")
-        if ret_code in (1, 2, 3, 4):
-            self.add_to_console(results)
-            return
-        self.add_to_console("Success.<br>")
-        cds_patch = defaultdict(list)
+        # Necessary because bokeh server does not print traceback in general
+        # on failure
+        try:
+            if self.descr_value is None or self.pdb_value is None or \
+                    self.cid_value is None or self.seq_start_value is None:
+                e_msg = f"<br>One of the input values is None, please try again.<br>"
+                self.add_to_console(e_msg)
+                return
+            msg = f"<br>Called with args descr_value: [{self.descr_value}], " \
+                  f"pdb_value: [{self.pdb_value}], cid_value: [{self.cid_value}]," \
+                  f" seq_start_value: [{self.seq_start_value}].<br>"
+            self.add_to_console(msg)
+            results = self.ui_callback(self.descr_value, self.pdb_value,
+                                        self.cid_value, self.seq_start_value)
+            self.add_to_console("Success.<br>")
+            cds_patch = defaultdict(list)
 
-        best_match = defaultdict(int)
-        track_first_resno = dict()
-        p_per_point = results['per_point']
+            best_match = defaultdict(int)
+            track_first_resno = dict()
+            p_per_point = results['per_point']
 
-        if len(p_per_point) != 30:
-            print(f"in set_result_callback, len(p_per_point) != 30, is {len(p_per_point)}")
-            raise Exception
+            if len(p_per_point) != 30:
+                msg = f"in set_result_callback, len(p_per_point) != 30, is " \
+                      f"{len(p_per_point)}, {traceback.format_exc()}"
+                raise Exception(msg)
 
-        for i, (sno, p) in enumerate(p_per_point.items()):
-            _matches = []
-            for j, term in enumerate(p[:3]):
-                if len(term) != 2:
-                    print(f"in set_result_callback, len(term) != 2, "
-                        f"is {term}")
-                    raise Exception
-                if len(term[0]) != 3:
-                    print(f"in set_result_callback, len(term[0]) != 3, "
-                          f"is {term[0]}")
-                    raise Exception
-                index = i * 3 + j
-                pdb_id, start_resno, cid = term[0]
-                match_value = term[1]
-                cds_patch['resno'].append((index, sno))
-                cds_patch['pdb'].append((index, pdb_id))
-                cds_patch['cid'].append((index, cid))
-                cds_patch['match_resno'].append((index, start_resno))
-                cds_patch['match_vals'].append((index, "{0:.3f}".format(
-                    match_value)))
-                _matches.append([pdb_id, cid, match_value])
-                if (pdb_id, cid) in track_first_resno:
-                    track_first_resno[(pdb_id, cid)] = min(
-                        track_first_resno[(pdb_id, cid)], start_resno)
+            for i, (sno, p) in enumerate(p_per_point.items()):
+                _matches = []
+                for j, term in enumerate(p[:3]):
+                    if len(term) != 2:
+                        msg = f"in set_result_callback, len(term) != 2, is " \
+                              f"{term}, {traceback.format_exc()}"
+                        raise Exception(msg)
+                    if len(term[0]) != 3:
+                        msg = f"in set_result_callback, len(term[0]) != 3, " \
+                              f"is {term}, {traceback.format_exc()}"
+                        raise Exception(msg)
+                    index = i * 3 + j
+                    pdb_id, start_resno, cid = term[0]
+                    match_value = term[1]
+                    cds_patch['resno'].append((index, sno))
+                    cds_patch['pdb'].append((index, pdb_id))
+                    cds_patch['cid'].append((index, cid))
+                    cds_patch['match_resno'].append((index, start_resno))
+                    cds_patch['match_vals'].append((index, "{0:.3f}".format(
+                        match_value)))
+                    _matches.append([pdb_id, cid, match_value])
+                    if (pdb_id, cid) in track_first_resno:
+                        track_first_resno[(pdb_id, cid)] = min(
+                            track_first_resno[(pdb_id, cid)], start_resno)
+                    else:
+                        track_first_resno[(pdb_id, cid)] = start_resno
+                summed_match_val = sum(i[2] for i in _matches)
+                for match in _matches:
+                    best_match[(match[0], match[1])] += match[2] / summed_match_val
+            self.result_CDS.patch(cds_patch)
+
+            top_5 = []
+            for key, value in best_match.items():
+                heapq.heappush(top_5, (-value, key))
+
+            summary_patch = defaultdict(list)
+            for i in range(5):
+                if top_5:
+                    match_value, (pdb_id, cid) = heapq.heappop(top_5)
+                    match_value = match_value * (-1)
+                    summary_patch['pdb'].append((i, pdb_id))
+                    summary_patch['cid'].append((i, cid))
+                    summary_patch['match_resno'].append(
+                        (i, track_first_resno[(pdb_id, cid)]))
+                    summary_patch['match_vals'].append(
+                        (i, "{0:.3f}".format(match_value)))
                 else:
-                    track_first_resno[(pdb_id, cid)] = start_resno
-            summed_match_val = sum(i[2] for i in _matches)
-            for match in _matches:
-                best_match[(match[0], match[1])] += match[2] / summed_match_val
-        self.result_CDS.patch(cds_patch)
+                    summary_patch['pdb'].append((i, ""))
+                    summary_patch['cid'].append((i, ""))
+                    summary_patch['match_resno'].append((i, ""))
+                    summary_patch['match_vals'].append((i, ""))
+            self.summary_CDS.patch(summary_patch)
 
-        top_5 = []
-        for key, value in best_match.items():
-            heapq.heappush(top_5, (-value, key))
+            if self.descr_value not in results['generic']:
+                msg = f"WARNING: self.descr_value not in results['generic'], "
+                f"{self.descr_value}"
+                self.add_to_console(msg)
+                init_cds = self._init_all_descr_CDS().data
+                empty_patch = defaultdict(list)
+                for key_str, values in init_cds.items():
+                    empty_patch[key_str] = [(i, term) for i, term in
+                                            enumerate(values)]
+                self.all_descr_CDS.patch(empty_patch)
 
-        summary_patch = defaultdict(list)
-        for i in range(5):
-            if top_5:
-                match_value, (pdb_id, cid) = heapq.heappop(top_5)
-                match_value = match_value * (-1)
-                summary_patch['pdb'].append((i, pdb_id))
-                summary_patch['cid'].append((i, cid))
-                summary_patch['match_resno'].append(
-                    (i, track_first_resno[(pdb_id, cid)]))
-                summary_patch['match_vals'].append(
-                    (i, "{0:.3f}".format(match_value)))
+                init_cds = self._init_descr_match_CDS().data
+                empty_patch = defaultdict(list)
+                for key_str, values in init_cds.items():
+                    empty_patch[key_str] = [(i, term) for i, term in
+                                            enumerate(values)]
+                self.descr_match_CDS.patch(empty_patch)
             else:
-                summary_patch['pdb'].append((i, ""))
-                summary_patch['cid'].append((i, ""))
-                summary_patch['match_resno'].append((i, ""))
-                summary_patch['match_vals'].append((i, ""))
-        self.summary_CDS.patch(summary_patch)
-
-
-        if self.descr_value not in results['generic']:
-            print(f"WARNING: self.descr_value not in results['generic'], "
-                  f"{self.descr_value}")
-        else:
-            p_generic = results['generic'][self.descr_value]
-            descr_match_patch = defaultdict(list)
-            summed_descr_score = sum(p_generic.values())
-            descr_match_patch['resno'].append((0, "Total"))
-            descr_match_patch['match_vals'].append(
-                (0, "{0:.3f}".format(summed_descr_score)))
-            for i, (sno, p) in enumerate(p_generic.items()):
-                i += 1
-                descr_match_patch['resno'].append((i, sno))
+                p_generic = results['generic'][self.descr_value]
+                descr_match_patch = defaultdict(list)
+                summed_descr_score = sum(p_generic.values())
+                descr_match_patch['resno'].append((0, "Total"))
                 descr_match_patch['match_vals'].append(
-                    (i, "{0:.3f}".format(p)))
-            self.descr_match_CDS.patch(descr_match_patch)
-            all_descr_patch = defaultdict(list)
-            scores = []
-            for i, (descr, values) in enumerate(results['generic'].items()):
-                summed_descr_score = sum(values.values())
-                scores.append((self.descr_key_title_map[descr], summed_descr_score))
+                    (0, "{0:.3f}".format(summed_descr_score)))
+                for i, (sno, p) in enumerate(p_generic.items()):
+                    i += 1
+                    descr_match_patch['resno'].append((i, sno))
+                    descr_match_patch['match_vals'].append(
+                        (i, "{0:.3f}".format(p)))
+                self.descr_match_CDS.patch(descr_match_patch)
+                all_descr_patch = defaultdict(list)
+                scores = []
+                for i, (descr, values) in enumerate(results['generic'].items()):
+                    summed_descr_score = sum(values.values())
+                    scores.append((self.descr_key_title_map[descr],
+                                   summed_descr_score))
 
-            sorted_i = np.argsort([i[1] for i in scores])[::-1]
-            for i in range(len(sorted_i)):
-                selected_i = sorted_i[i]
-                all_descr_patch['descr'].append((i, scores[selected_i][0]))
-                all_descr_patch['score'].append((i, "{0:.3f}".format(scores[
-                                                                         selected_i][1])))
-            self.all_descr_CDS.patch(all_descr_patch)
+                sorted_i = np.argsort([i[1] for i in scores])[::-1]
+                for i in range(len(sorted_i)):
+                    selected_i = sorted_i[i]
+                    all_descr_patch['descr'].append((i, scores[selected_i][0]))
+                    all_descr_patch['score'].append((i, "{0:.3f}".format(
+                        scores[selected_i][1])))
+                self.all_descr_CDS.patch(all_descr_patch)
 
-        segment_scores = results['segment']
-        segment_plot_patch = defaultdict(list)
-
-        for i, (sno, values) in enumerate(segment_scores.items()):
-            segment_plot_patch['xs'].append(sno)
-
-            if not values:
-                segment_plot_patch['ys'].append(0)
-                segment_plot_patch['name'].append(None)
-            else:
-                protein_id, score_1, score_2 = values
-                segment_plot_patch['ys'].append(score_1)
-                segment_plot_patch['name'].append(protein_id)
-        segment_plot_patch['descr'] = self.descr_value
-        self.segment_plot.figure_update(segment_plot_patch)
+            segment_scores = results['segment']
+            segment_plot_patch = defaultdict(list)
+            segment_plot_patch['logo'] = results['alphabet']
+            for i, (sno, values) in enumerate(segment_scores.items()):
+                segment_plot_patch['xs'].append(sno)
+                if not values:
+                    segment_plot_patch['ys'].append(0)
+                    segment_plot_patch['name'].append(None)
+                else:
+                    protein_id, score_1, score_2 = values
+                    segment_plot_patch['ys'].append(score_1)
+                    segment_plot_patch['name'].append(protein_id)
+            segment_plot_patch['descr'] = self.descr_value
+            self.segment_plot.figure_update(segment_plot_patch)
+        except Exception as e:
+            msg = (f"Callback failed with error {traceback.format_exc()}, "
+                  f"{e.args}")
+            self.add_to_console(msg)
         return
 
     def _build_msg_board(self):
@@ -937,8 +891,6 @@ class UI:
                     match_vals=["" for __ in range(90)])
         source = ColumnDataSource(data)
         return source
-
-
 
     def _init_all_descr_CDS(self):
         data = dict(descr=list(self.descr_key_title_map.values()),
@@ -1008,11 +960,9 @@ class UI:
                    TableColumn(field="pdb", title="PDB ID", width=40),
                    TableColumn(field="cid", title="Chain ID", width=40),
                    TableColumn(field="match_resno", title="Res_No", width=40),
-                   TableColumn(field="match_vals", title="Score",
-                               width=40)]
+                   TableColumn(field="match_vals", title="Score", width=40)]
         data_table = DataTable(source=self.result_CDS, columns=columns,
-                               width=350,
-                               height=280, index_position=None,
+                               width=350, height=280, index_position=None,
                                fit_columns=True)
         return data_table
 
@@ -1092,12 +1042,9 @@ class UI:
                               self.summary_table], height=200)
         descr_match_col = column([self.descr_match_table_header.figure,
                                   self.descr_match_table], height=200)
-
         all_descr_col = column([self.all_descr_header.figure, self.all_descr_table])
-
         ind_result_col = column([self.result_table_header.figure,
                                  self.result_table])
-
         segment_col = column(
             [self.segment_header.figure, self.segment_plot.full_figure])
 
