@@ -15,9 +15,6 @@ def main(input_path, output_path):
     Input: motif_pos_pkl
     output: descr_file.pkl
     """
-
-    # todo: if pdb_file is empty (0 bytes), for some reason load_pdb_data
-    #  does not throw exception
     logs.set_logging_level()
 
     # paths
@@ -35,13 +32,11 @@ def main(input_path, output_path):
     descrs = descr_main.calculate(motif_pos_map)
     print(f"Time taken: {time() - timecheck}")
     logging.debug(f"Time taken: {time() - timecheck}")
-    # for __, descr in descrs.groupby(['filename', 'cid', 'seq_marker']):
-    #     calc_descr.write_descr(descr)
 
     generic.warn_if_exist(paths.OUTPUT_DESCRS)
     # Switching back to pkl to avoid false float comparison failures.
     # with open(os.path.join(paths.ROOT, "final_descr_output_orig.pkl"),
-    import numpy as np
+
     with open(output_path, "wb") as file:
         pickle.dump(descrs, file, -1)
 
@@ -60,8 +55,39 @@ if __name__ == "__main__":
     # output_path = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
     # main(input_path, output_path)
     #
-    # input_path = os.path.join(paths.USER_INPUT, "efhand_motif_pos.txt")
-    # output_path = os.path.join(paths.DESCRS, "efhand_descr.pkl")
+
+    # input_path = os.path.join(paths.ROOT, "GxGxxG_motif_pos4.txt")
+    # output_path = os.path.join(paths.DESCRS, "GxGxxG_descr_search4.pkl")
+    # main(input_path, output_path)
+    # input_path = os.path.join(paths.ROOT, "mg_motif_pos2.pkl")
+    # output_path = os.path.join(paths.DESCRS, "mg_descr2.pkl")
+    # main(input_path, output_path)
+    # input_path = os.path.join(paths.ROOT, "efhand_motif_pos2.pkl")
+    # output_path = os.path.join(paths.DESCRS, "efhand_descr3.pkl")
+    # main(input_path, output_path)
+    #
+    # input_path = os.path.join(paths.ROOT, "GxGxxG_motif_pos2.pkl")
+    # output_path = os.path.join(paths.DESCRS, "GxGxxG_descr3.pkl")
+    # main(input_path, output_path)
+    input_path = os.path.join(paths.ROOT, "GxxGxG_motif_pos.pkl")
+    output_path = os.path.join(paths.DESCRS, "GxxGxG_descr.pkl")
+    main(input_path, output_path)
+
+    input_path = os.path.join(paths.ROOT, "GxGxxG_motif_pos.pkl")
+    output_path = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
+    main(input_path, output_path)
+
+    input_path = os.path.join(paths.ROOT, "GxGGxG_motif_pos.pkl")
+    output_path = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
+    main(input_path, output_path)
+
+    # input_path = os.path.join(paths.ROOT, "GxxGxG_motif_pos2.pkl")
+    # output_path = os.path.join(paths.DESCRS, "GxxGxG_descr3.pkl")
+    # main(input_path, output_path)
+
+
+    # input_path = os.path.join(paths.ROOT, "efhand_motif_pos_search.txt")
+    # output_path = os.path.join(paths.DESCRS, "efhand_descr_search.pkl")
     # main(input_path, output_path)
     #
     # input_path = os.path.join(paths.USER_INPUT, "GxGGxG_motif_pos.txt")
@@ -75,6 +101,9 @@ if __name__ == "__main__":
     # input_path = os.path.join(paths.USER_INPUT, "GxGxxG_motif_pos.txt")
     # output_path = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
     # main(input_path, output_path)
-    input_path = os.path.join(paths.ROOT, "output.pkl")
-    output_path = os.path.join(paths.DESCRS, "output_descr.pkl")
-    main(input_path, output_path)
+    # input_path = os.path.join(paths.ROOT, "output.pkl")
+    # output_path = os.path.join(paths.ROOT, "output_descr.pkl")
+    # main(input_path, output_path)
+    # input_path = os.path.join(paths.ROOT, "output.pkl")
+    # output_path = os.path.join(paths.ROOT, "output_descr.pkl")
+    # main(input_path, output_path)

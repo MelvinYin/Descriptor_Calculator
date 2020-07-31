@@ -56,6 +56,8 @@ class BaseParser(abc.ABC):
         """
         data_list = []
         for line in file_data:
+            if line.strip().startswith("ENDMDL"):
+                break
             if line.startswith(record_name):
                 splitted = self.split_line(line)
                 if not self.check_validity(splitted):

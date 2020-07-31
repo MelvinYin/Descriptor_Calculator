@@ -8,6 +8,9 @@ from config import params
 from descr import dihedrals, contacts, hbonds
 from pdb_component import pdb_interface
 import traceback
+from pdb_component import pdb_paths
+import os
+import shutil
 
 def calculate_single(pdb_id, cid, seq_marker):
     seq_marker = int(seq_marker)
@@ -46,43 +49,54 @@ def calculate_single(pdb_id, cid, seq_marker):
 def calculate(motif_pos_map):
     descrs = pd.DataFrame()
     i = 0
-    for pdb_id, motif_cid_map in motif_pos_map.items():
+    print(f"Total length: {len(motif_pos_map)}.")
+    for i, (pdb_id, motif_cid_map) in enumerate(motif_pos_map.items()):
+        print(f"{len(motif_pos_map) - i}: {pdb_id}")
         i += 1
         # if pdb_id != "2xsx":
         #     continue
-        motif_pos = motif_cid_map['sno_markers']
-        cid = motif_cid_map['cid']
+        motif_pos_s = motif_cid_map['sno_markers']
+        cids = motif_cid_map['cid']
 
         pdb_data = pdb_interface.get_info_for(pdb_id)
         if pdb_data is None:
             continue
         ATOM, HETATM, hb = pdb_data
-        try:
-            motif_pos = motif_pos[0]
-            dsr_snos = _get_sno_range(ATOM, cid, motif_pos)
-            if dsr_snos is None:
+        if not isinstance(motif_pos_s, list):
+            motif_pos_s = [motif_pos_s]
+            cids = [cids]
+
+        for motif_pos, cid in zip(motif_pos_s, cids):
+            try:
+                dsr_snos = _get_sno_range(ATOM, cid, motif_pos)
+                if dsr_snos is None:
+                    continue
+                res, C, CA, N = _from_considered_elements(ATOM, dsr_snos, cid)
+                pept_bonds = _get_pept_bonds(CA, dsr_snos)
+                # For filling descr df
+                res_CA = _get_res_CA(res, CA, dsr_snos)
+                angles, CA = dihedrals.get_descr_dihedrals(C, CA, N, dsr_snos)
+
+                hbond_descr = hbonds.get_descr_hb(hb, ATOM, HETATM, dsr_snos)
+
+                heavy_atom_contacts, hetatom_contacts, hetatom_covalent = \
+                    contacts.get_contacts(ATOM, HETATM, cid, dsr_snos)
+
+                descr = _assemble_descr(hetatom_contacts, hetatom_covalent,
+                                        heavy_atom_contacts, angles, hbond_descr,
+                                        res_CA, pept_bonds)
+
+                full_descr = _add_columns(descr, pdb_id, motif_pos, cid)
+                descrs = descrs.append(full_descr, ignore_index=True)
+            except Exception as e:
+                print(e)
+                print(f"Calc_descr failed for {pdb_id}:{cid}")
+                pdb_suffix = pdb_id.lower().strip()
+                if pdb_suffix+".pkl" in pdb_paths.PDB_PARSED_SET:
+                    os.remove(os.path.join(pdb_paths.PDB_PARSED,
+                                           pdb_suffix + ".pkl"))
+                # raise
                 continue
-            res, C, CA, N = _from_considered_elements(ATOM, dsr_snos, cid)
-            pept_bonds = _get_pept_bonds(CA, dsr_snos)
-            # For filling descr df
-            res_CA = _get_res_CA(res, CA, dsr_snos)
-            angles, CA = dihedrals.get_descr_dihedrals(C, CA, N, dsr_snos)
-
-            hbond_descr = hbonds.get_descr_hb(hb, ATOM, HETATM, dsr_snos)
-
-            heavy_atom_contacts, hetatom_contacts, hetatom_covalent = \
-                contacts.get_contacts(ATOM, HETATM, cid, dsr_snos)
-
-            descr = _assemble_descr(hetatom_contacts, hetatom_covalent,
-                                    heavy_atom_contacts, angles, hbond_descr,
-                                    res_CA, pept_bonds)
-
-            full_descr = _add_columns(descr, pdb_id, motif_pos, cid)
-            descrs = descrs.append(full_descr, ignore_index=True)
-        except:
-            print(f"Calc_descr failed for {pdb_id}:{cid}")
-            raise
-            continue
     return descrs
 
 
@@ -191,6 +205,7 @@ def _get_res_CA(ress, CAs, dsr_snos):
     return res_CA
 
 def _from_considered_elements(ATOM, dsr_snos, cid):
+
     ATOM = ATOM.filter(['cid', 'sno', 'aname', 'coord', 'res'])
     ATOM = ATOM[(ATOM.sno.isin(dsr_snos)) &
                 (ATOM.aname.isin(("N", "C", "CA"))) &
@@ -202,6 +217,7 @@ def _from_considered_elements(ATOM, dsr_snos, cid):
                                   np.array(['C', 'CA', 'N']))
     np.testing.assert_array_equal(ATOM.aname.values[3:6],
                                   np.array(['C', 'CA', 'N']))
+
     res = np.array([i for i in ATOM.res.values[::3]])
     coords = ATOM.coord.values
     C = np.array([i for i in coords[::3]])

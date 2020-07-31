@@ -48,7 +48,7 @@ class SegmentCalculator:
             matchers['ef'] = pickle.load(file)
 
         output_matcher = os.path.join(paths.MATCHERS,
-                                      "mg_dxdxxd_matcher.pkl")
+                                      "mg_matcher.pkl")
         with open(output_matcher, 'rb') as file:
             matchers['mg'] = pickle.load(file)
 
@@ -253,11 +253,6 @@ class MatcherManager:
         residues = return_val.res
         output = dict()
         alphabets = []
-        # for res in residues:
-        #     if res in AA3_to_AA1:
-        #         alphabets.append(AA3_to_AA1[res])
-        #     else:
-        #         alphabets.append("X")
         for res in residues:
             if res in AA3_to_AA1:
                 alphabets.append(res)
@@ -291,7 +286,7 @@ class MatcherManager:
         with open(output_matcher, 'rb') as file:
             matchers['ef'] = pickle.load(file)
 
-        output_matcher = os.path.join(paths.MATCHERS, "mg_dxdxxd_matcher_generic.pkl")
+        output_matcher = os.path.join(paths.MATCHERS, "mg_matcher_generic.pkl")
         with open(output_matcher, 'rb') as file:
             matchers['mg'] = pickle.load(file)
 
@@ -314,7 +309,7 @@ class MatcherManager:
         with open(output_matcher, 'rb') as file:
             matchers['ef'] = pickle.load(file)
 
-        output_matcher = os.path.join(paths.MATCHERS, "mg_dxdxxd_matcher.pkl")
+        output_matcher = os.path.join(paths.MATCHERS, "mg_matcher.pkl")
         with open(output_matcher, 'rb') as file:
             matchers['mg'] = pickle.load(file)
 
@@ -336,7 +331,7 @@ class MatcherManager:
         return matchers
 
 
-class IndividualFigure:
+class SegmentPlot:
     def __init__(self, descr_length=30):
         self.descr_length = descr_length
         self.url_descr_map = self._set_url_descr_map()
@@ -645,6 +640,7 @@ class UI:
         self.result_CDS = self._init_result_CDS()
         self.summary_CDS = self._init_summary_CDS()
         self.descr_match_CDS = self._init_descr_match_CDS()
+        # self.input_res_CDS = self._init_input_res_CDS()
         self.all_descr_CDS = self._init_all_descr_CDS()
 
         self.console_header = self._build_console_header()
@@ -670,6 +666,7 @@ class UI:
         self.result_table = self._build_result_table()
         self.segment_plot = self._build_segment_plot()
         self.descr_match_table = self._build_descr_match_table()
+        # self.input_res_table = self._build_input_res_table()
 
         self.figure = self._build_figure()
 
@@ -907,8 +904,13 @@ class UI:
         source = ColumnDataSource(data)
         return source
 
-
     def _init_descr_match_CDS(self):
+        data = dict(resno=["" for __ in range(31)],
+                    match_vals=["" for __ in range(31)])
+        source = ColumnDataSource(data)
+        return source
+
+    def _init_input_res_CDS(self):
         data = dict(resno=["" for __ in range(31)],
                     match_vals=["" for __ in range(31)])
         source = ColumnDataSource(data)
@@ -967,7 +969,7 @@ class UI:
         return data_table
 
     def _build_segment_plot(self):
-        plot = IndividualFigure()
+        plot = SegmentPlot()
         return plot
 
 
@@ -975,6 +977,14 @@ class UI:
         columns = [TableColumn(field="resno", title="Res_No", width=40),
             TableColumn(field="match_vals", title="Score", width=40)]
         data_table = DataTable(source=self.descr_match_CDS, columns=columns,
+                               width=350, height=150, index_position=None,
+                               fit_columns=True)
+        return data_table
+
+    def _build_input_res_table(self):
+        columns = [TableColumn(field="resno", title="Res_No", width=40),
+                   TableColumn(field="match_vals", title="Score", width=40)]
+        data_table = DataTable(source=self.input_res_CDS, columns=columns,
                                width=350, height=150, index_position=None,
                                fit_columns=True)
         return data_table

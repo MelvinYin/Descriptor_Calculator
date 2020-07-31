@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from descr.descr_main import calculate_single
 
 
-# input_df = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
+# input_df = os.path.join(paths.DESCRS, "mg_descr.pkl")
 # with open(input_df, 'rb', -1) as file:
 #     df = pickle.load(file)
 # print("opened")
@@ -34,9 +34,9 @@ from descr.descr_main import calculate_single
 import pandas as pd
 
 def load_matchers_json():
-    input_df = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.json")
+    input_df = os.path.join(paths.DESCRS, "mg_descr.json")
     output_matcher = os.path.join(paths.MATCHERS,
-                                  "mg_dxdxxd_matcher_generic.pkl")
+                                  "mg_matcher_generic.pkl")
     df = pd.read_json(input_df)
     matcher = Matcher()
     matcher.load(df)
@@ -81,9 +81,9 @@ def load_matchers_json():
     pass
 
 def load_matchers():
-    input_df = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
+    input_df = os.path.join(paths.DESCRS, "mg_descr.pkl")
     output_matcher = os.path.join(paths.MATCHERS,
-                                  "mg_dxdxxd_matcher_generic.pkl")
+                                  "mg_matcher_generic.pkl")
     with open(input_df, 'rb', -1) as file:
         df = pickle.load(file)
     matcher = Matcher()
@@ -129,7 +129,7 @@ def load_matchers():
     pass
 
 
-load_matchers_json()
+load_matchers()
 # def convert_to_json():
 #     input_df = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
 #     with open(input_df, 'rb', -1) as file:

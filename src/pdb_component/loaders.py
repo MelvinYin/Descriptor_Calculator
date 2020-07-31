@@ -91,15 +91,16 @@ def _load_data(file_path):
     ATOM = pdf_files.parse_with('ATOMParser')
     MODRES = pdf_files.parse_with('MODRESParser')
     HETATM = pdf_files.parse_with('HETATMParser')
-    hb = pdf_files.parse_with('HbondParser')
+    # hb = pdf_files.parse_with('HbondParser')
+    hb = None
 
     if not MODRES.empty:
         ATOM_res = ATOM.res.copy()
         ATOM.res = _MODRES_sub(ATOM_res, MODRES.res, MODRES.std_res_name)
     if HETATM.empty:
         HETATM = None
-    if hb.empty:
-        hb = None
+    # if hb.empty:
+    #     hb = None
     return ATOM, HETATM, hb
 
 # pylint: enable=invalid-name

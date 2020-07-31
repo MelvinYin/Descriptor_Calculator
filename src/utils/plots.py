@@ -77,9 +77,6 @@ def plot_signature_logo(descr_full, num_res_considered=4, title=None):
         res_sorted = list(zip(*sorted(zip(*res_unique), key=_for_sort)))
         res_names, res_counts = res_sorted[0][:num_res_considered], \
                                 res_sorted[1][:num_res_considered]
-        print(res_names)
-        print(res_counts)
-        print("")
         res_names = res_names[::-1]
         res_counts = res_counts[::-1]
         res_percents = list([i/num_seqs for i in res_counts])
@@ -265,29 +262,46 @@ def plot_h_contacts(descr):
     plt.figure()
     plt.suptitle("H-Contact summed counts")
     plt.scatter(h_contacts_by_pos.keys(), h_contacts_by_pos.values())
-
+import pandas as pd
 def main():
     """
     Input df should have these keys:
     ['sno', 'contact', 'covalent', 'phi', 'psi', 'region', 'ss', 'ext', 'role',
      'category', 'donor', 'acc', 'res', 'CA', 'filename', 'seq_marker', 'cid']
     """
-    input_df = os.path.join(paths.DESCRS, "efhand_descr.pkl")
+    # input_df = os.path.join(paths.ROOT, "output_descr.pkl")
+
+    # input_df = os.path.join(paths.ROOT, "GxGGxG_descr.pkl")
+    # input_df = os.path.join(paths.DESCRS, "GxGxxG_descr_search4.pkl")
+    # input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.json")
+    input_df = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
+
+
+    # input_df = os.path.join(paths.DESCRS, "efhand_descr.pkl")
     # output_path = os.path.join(paths.ROOT, "final_descr_output_orig.pkl")
     # output_path = os.path.join(paths.ROOT, "final_descr_output.pkl")
     # output_path = os.path.join(paths.ROOT, "pid_pdb_map.pkl")
 
     with open(input_df, "rb") as pklfile:
         df = pkl.load(pklfile)
+
+    # df = pd.read_json(input_df)
     # df.sort_index(inplace=True)
+    print(len(set(df['filename'].values)))
+    print(len(df))  # 34010 for orig vs 48046 for search, for GxGxxG
     plot_signature_logo(df)
+    plt.savefig("plot_signature_logo.png")
     # plot_signature_bar(df)
     # plot_CA(df)
     plot_dihedral(df)
+    plt.savefig("plot_dihedral.png")
     plot_hbonds_raw(df)
+    plt.savefig("plot_hbonds_raw.png")
     # plot_hbonds_percentage(df)
     plot_contacts(df)
+    plt.savefig("plot_contacts.png")
     plot_covalents(df)
+    plt.savefig("plot_covalents.png")
     # plot_h_contacts(df)
     # plot_dihedral_for_diff_res(df, 0)
     plt.show()
