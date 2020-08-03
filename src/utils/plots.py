@@ -271,10 +271,10 @@ def main():
     """
     # input_df = os.path.join(paths.ROOT, "output_descr.pkl")
 
-    # input_df = os.path.join(paths.ROOT, "GxGGxG_descr.pkl")
+    input_df = os.path.join(paths.DESCRS, "GxxGxG_descr.pkl")
     # input_df = os.path.join(paths.DESCRS, "GxGxxG_descr_search4.pkl")
     # input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.json")
-    input_df = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
+    # input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
 
 
     # input_df = os.path.join(paths.DESCRS, "efhand_descr.pkl")

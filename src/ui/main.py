@@ -251,7 +251,15 @@ class MatcherManager:
         p_all_sno = self.matchers[descr].query(return_val)
         return_val_sno = return_val.sno.values
         residues = return_val.res
+        res_to_AA1 = []
+        for res in residues.values:
+            if res in AA3_to_AA1:
+                res_to_AA1.append(AA3_to_AA1[res])
+            else:
+                res_to_AA1.append('X')
+
         output = dict()
+        output['residues'] = res_to_AA1
         alphabets = []
         for res in residues:
             if res in AA3_to_AA1:
@@ -703,7 +711,7 @@ class UI:
                                         self.cid_value, self.seq_start_value)
             self.add_to_console("Success.<br>")
             cds_patch = defaultdict(list)
-
+            self.add_to_console(" ".join(results['residues']))
             best_match = defaultdict(int)
             track_first_resno = dict()
             p_per_point = results['per_point']
