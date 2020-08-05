@@ -5,8 +5,7 @@ import subprocess
 
 import numpy as np
 import pandas as pd
-
-from pdb_component import pdb_paths
+from config import paths
 
 # pylint: disable=anomalous-backslash-in-string, arguments-differ
 class BaseParser(abc.ABC):
@@ -389,7 +388,7 @@ class HbondParser(BaseParser):
         filepath = os.path.abspath(filepath)
         hbonds_fname = "query.hbonds"
         pdb_fname = os.path.abspath(filepath)
-        hb_exec = pdb_paths.HB_EXEC
+        hb_exec = paths.HB_EXEC
         # process = subprocess.run([hb_exec, pdb_fname, hbonds_fname], shell=True)
         process = subprocess.run(f"{hb_exec} {pdb_fname} {hbonds_fname}", shell=True)
         if process.returncode != 0:

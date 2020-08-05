@@ -6,8 +6,8 @@ import traceback
 from urllib import request
 import urllib.error
 
-from pdb_component import pdb_utils, pdb_paths, loaders
-
+from pdb_component import pdb_utils, loaders
+from config import paths
 
 
 def get_seq_for(pdb_code, cid=None):
@@ -43,10 +43,10 @@ def get_info_no_cache(pdb_code):
     if not get_success:
         logging.warning(f"Loading of pdb file {pdb_suffix} fails.")
         return None
-    filepath = os.path.join(pdb_paths.PDB_PARSED, pdb_suffix + '.pkl')
+    filepath = os.path.join(paths.PDB_PARSED, pdb_suffix + '.pkl')
     with open(filepath, 'rb') as file:
         output = pickle.load(file)
-    output_path = os.path.join(pdb_paths.PDB_FILES, pdb_code + ".pdb")
+    output_path = os.path.join(paths.PDB_FILES, pdb_code + ".pdb")
     # os.remove(filepath)
     # os.remove(output_path)
     return output
@@ -55,10 +55,10 @@ def get_info_no_cache(pdb_code):
 def get_info_for(pdb_code):
     pdb_suffix = pdb_code.lower().strip()
     # print(f"start: {pdb_suffix}")
-    if pdb_suffix+".pkl" not in pdb_paths.PDB_PARSED_SET:
-        print(f"{pdb_suffix} not in pdb_paths.PDB_PARSED_SET")
-        if pdb_suffix+".pdb" in pdb_paths.PDB_FILES_SET:
-            print(f"{pdb_suffix} not in pdb_paths.PDB_FILES_SET")
+    if pdb_suffix+".pkl" not in paths.PDB_PARSED_SET:
+        print(f"{pdb_suffix} not in paths.PDB_PARSED_SET")
+        if pdb_suffix+".pdb" in paths.PDB_FILES_SET:
+            print(f"{pdb_suffix} not in paths.PDB_FILES_SET")
             logging.info(f"{pdb_suffix} not found in PDB_PARSED_SET, "
                             f"but is in PDB_FILES_SET.")
             get_success = loaders.load_pdb_info(pdb_code)
@@ -73,16 +73,16 @@ def get_info_for(pdb_code):
             print(f"get_info_for(pdb_code) failed for {pdb_code}")
             logging.warning(f"Loading of pdb file {pdb_suffix} fails.")
             return None
-        pdb_paths.PDB_PARSED_SET.add(pdb_suffix + ".pkl")
-        pdb_paths.PDB_FILES_SET.add(pdb_suffix + ".pdb")
-    filepath = os.path.join(pdb_paths.PDB_PARSED, pdb_suffix+'.pkl')
+        paths.PDB_PARSED_SET.add(pdb_suffix + ".pkl")
+        paths.PDB_FILES_SET.add(pdb_suffix + ".pdb")
+    filepath = os.path.join(paths.PDB_PARSED, pdb_suffix+'.pkl')
     with open(filepath, 'rb') as file:
         output = pickle.load(file)
     return output
 
 
 def preload_all():
-    for filename in pdb_paths.PDB_FILES_SET:
+    for filename in paths.PDB_FILES_SET:
         print(filename)
         pdb_code = filename.split(".")[0]
         loaders.load_pdb_info(pdb_code)
@@ -91,7 +91,7 @@ def preload_all():
 def download(pdb_code, silent=False):
     pdb_code = pdb_code.lower().strip()
     url = pdb_utils.PDB_URL_TEMPLATE.format(pdb_code)
-    output_path = os.path.join(pdb_paths.PDB_FILES, pdb_code + ".pdb")
+    output_path = os.path.join(paths.PDB_FILES, pdb_code + ".pdb")
     try:
         with contextlib.closing(request.urlopen(url)) as contents:
             with open(output_path, 'w') as output_file:

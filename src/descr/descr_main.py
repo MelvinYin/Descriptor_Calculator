@@ -4,13 +4,11 @@ import logging
 import numpy as np
 import pandas as pd
 
-from config import params
+from config import params, paths
 from descr import dihedrals, contacts, hbonds
 from pdb_component import pdb_interface
 import traceback
-from pdb_component import pdb_paths
 import os
-import shutil
 
 def calculate_single(pdb_id, cid, seq_marker):
     seq_marker = int(seq_marker)
@@ -48,13 +46,9 @@ def calculate_single(pdb_id, cid, seq_marker):
 
 def calculate(motif_pos_map):
     descrs = pd.DataFrame()
-    i = 0
     print(f"Total length: {len(motif_pos_map)}.")
     for i, (pdb_id, motif_cid_map) in enumerate(motif_pos_map.items()):
         print(f"{len(motif_pos_map) - i}: {pdb_id}")
-        i += 1
-        # if pdb_id != "2xsx":
-        #     continue
         motif_pos_s = motif_cid_map['sno_markers']
         cids = motif_cid_map['cid']
 
@@ -92,45 +86,13 @@ def calculate(motif_pos_map):
                 print(e)
                 print(f"Calc_descr failed for {pdb_id}:{cid}")
                 pdb_suffix = pdb_id.lower().strip()
-                if pdb_suffix+".pkl" in pdb_paths.PDB_PARSED_SET:
-                    os.remove(os.path.join(pdb_paths.PDB_PARSED,
+                if pdb_suffix+".pkl" in paths.PDB_PARSED_SET:
+                    os.remove(os.path.join(paths.PDB_PARSED,
                                            pdb_suffix + ".pkl"))
                 # raise
                 continue
     return descrs
 
-
-# def calculate(pdb_info_data_map):
-#     descrs = pd.DataFrame()
-#     for pdb_info, pdb_data in pdb_info_data_map.items():
-#         try:
-#             filename, sno_marker, cid = pdb_info
-#             ATOM, HETATM, hb = pdb_data
-#             dsr_snos = _get_sno_range(ATOM, cid, sno_marker)
-#             if dsr_snos is None:
-#                 continue
-#
-#             res, C, CA, N = _from_considered_elements(ATOM, dsr_snos, cid)
-#             pept_bonds = _get_pept_bonds(CA, dsr_snos)
-#             # For filling descr df
-#             res_CA = _get_res_CA(res, CA, dsr_snos)
-#             angles, CA = dihedrals.get_descr_dihedrals(C, CA, N, dsr_snos)
-#
-#             hbond_descr = hbonds.get_descr_hb(hb, ATOM, HETATM, dsr_snos)
-#
-#             heavy_atom_contacts, hetatom_contacts, hetatom_covalent = \
-#                 contacts.get_contacts(
-#                 ATOM, HETATM, cid, dsr_snos)
-#
-#             descr = _assemble_descr(hetatom_contacts, hetatom_covalent,
-#                                     heavy_atom_contacts, angles, hbond_descr,
-#                                     res_CA, pept_bonds)
-#
-#             full_descr = _add_columns(descr, filename, sno_marker, cid)
-#             descrs = descrs.append(full_descr, ignore_index=True)
-#         except:
-#             continue
-#     return descrs
 
 def _get_param_to_consider(ATOM, marker, cids):
     param_to_consider = []

@@ -6,7 +6,7 @@ import traceback
 
 from pdb_component.parsers import loader
 import pickle
-from pdb_component import pdb_paths
+from config import paths
 # from descr.parsers import pdb_list_parser
 
 # pylint: disable=invalid-name
@@ -65,7 +65,7 @@ def _MODRES_sub(main_res, MODRES_res, MODRES_std_res_name):
 
 def load_pdb_info(pdb_code):
     pdb_code = pdb_code.lower().strip()
-    filepath = os.path.join(pdb_paths.PDB_FILES, pdb_code + ".pdb")
+    filepath = os.path.join(paths.PDB_FILES, pdb_code + ".pdb")
     print(filepath)
     try:
         file_data = _load_data(filepath)
@@ -75,7 +75,7 @@ def load_pdb_info(pdb_code):
         logging.info(f"Traceback: <{traceback.format_exc()}>")
         logging.info(f"Error_msg: <{e}>\n\n")
         return False
-    output_path = os.path.join(pdb_paths.PDB_PARSED, pdb_code + ".pkl")
+    output_path = os.path.join(paths.PDB_PARSED, pdb_code + ".pkl")
     with open(output_path, 'wb') as file:
         pickle.dump(file_data, file, -1)
     return True

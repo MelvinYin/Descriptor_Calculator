@@ -8,16 +8,9 @@ from config import paths
 from descr import descr_main
 from utils import logs, plots, generic
 
-import matplotlib.pyplot as plt
-
-def main(input_path, output_path):
-    """
-    Input: motif_pos_pkl
-    output: descr_file.pkl
-    """
+def build_descr(input_path, output_path):
     logs.set_logging_level()
 
-    # paths
     store_dir = os.path.join(paths.ROOT, 'data', 'store')
 
     if os.path.isdir(store_dir):
@@ -40,70 +33,35 @@ def main(input_path, output_path):
     with open(output_path, "wb") as file:
         pickle.dump(descrs, file, -1)
 
-    # with open(output_path, "rb") as file:
-    #     descrs = pickle.load(file)
-    # print(descrs)
-    # plots.plot_signature_logo(descrs)
-    # plt.show()
-
-def main_with_ui():
-    pass
-
 
 if __name__ == "__main__":
-    # input_path = os.path.join(paths.USER_INPUT, "mg_dxdxxd_motif_pos.txt")
-    # output_path = os.path.join(paths.DESCRS, "mg_dxdxxd_descr.pkl")
-    # main(input_path, output_path)
+    input_path = os.path.join(paths.USER_INPUT, "efhand_motif_pos2.pkl")
+    output_path = os.path.join(paths.DESCRS, "efhand_descr2.pkl")
+    build_descr(input_path, output_path)
+    input_path = os.path.join(paths.USER_INPUT, "mg_motif_pos2.pkl")
+    output_path = os.path.join(paths.DESCRS, "mg_descr2.pkl")
+    build_descr(input_path, output_path)
+
+    input_path = os.path.join(paths.USER_INPUT, "GxGxxG_motif_pos2.pkl")
+    output_path = os.path.join(paths.DESCRS, "GxGxxG_descr2.pkl")
+    build_descr(input_path, output_path)
+
+    # input_path = os.path.join(paths.USER_INPUT, "GxGxxG_motif_pos2.pkl")
+    # output_path = os.path.join(paths.DESCRS, "GxGxxG_descr2.pkl")
+    # build_descr(input_path, output_path)
     #
+    # input_path = os.path.join(paths.USER_INPUT, "GxGGxG_motif_pos2.pkl")
+    # output_path = os.path.join(paths.DESCRS, "GxGGxG_descr2.pkl")
+    # build_descr(input_path, output_path)
 
-    # input_path = os.path.join(paths.ROOT, "GxGxxG_motif_pos4.txt")
-    # output_path = os.path.join(paths.DESCRS, "GxGxxG_descr_search4.pkl")
-    # main(input_path, output_path)
-    # input_path = os.path.join(paths.ROOT, "mg_motif_pos2.pkl")
-    # output_path = os.path.join(paths.DESCRS, "mg_descr2.pkl")
-    # main(input_path, output_path)
-    # input_path = os.path.join(paths.ROOT, "efhand_motif_pos2.pkl")
-    # output_path = os.path.join(paths.DESCRS, "efhand_descr3.pkl")
-    # main(input_path, output_path)
-    #
-    # input_path = os.path.join(paths.ROOT, "GxGxxG_motif_pos2.pkl")
-    # output_path = os.path.join(paths.DESCRS, "GxGxxG_descr3.pkl")
-    # main(input_path, output_path)
-    input_path = os.path.join(paths.ROOT, "GxxGxG_motif_pos.pkl")
-    output_path = os.path.join(paths.DESCRS, "GxxGxG_descr.pkl")
-    main(input_path, output_path)
-
-    input_path = os.path.join(paths.ROOT, "GxGxxG_motif_pos.pkl")
-    output_path = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
-    main(input_path, output_path)
-
-    input_path = os.path.join(paths.ROOT, "GxGGxG_motif_pos.pkl")
-    output_path = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
-    main(input_path, output_path)
-
-    # input_path = os.path.join(paths.ROOT, "GxxGxG_motif_pos2.pkl")
-    # output_path = os.path.join(paths.DESCRS, "GxxGxG_descr3.pkl")
-    # main(input_path, output_path)
-
-
-    # input_path = os.path.join(paths.ROOT, "efhand_motif_pos_search.txt")
-    # output_path = os.path.join(paths.DESCRS, "efhand_descr_search.pkl")
-    # main(input_path, output_path)
-    #
-    # input_path = os.path.join(paths.USER_INPUT, "GxGGxG_motif_pos.txt")
-    # output_path = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
-    # main(input_path, output_path)
-    #
-    # input_path = os.path.join(paths.USER_INPUT, "GxxGxG_motif_pos.txt")
+    # input_path = os.path.join(paths.USER_INPUT, "GxxGxG_motif_pos.pkl")
     # output_path = os.path.join(paths.DESCRS, "GxxGxG_descr.pkl")
-    # main(input_path, output_path)
+    # build_descr(input_path, output_path)
     #
-    # input_path = os.path.join(paths.USER_INPUT, "GxGxxG_motif_pos.txt")
+    # input_path = os.path.join(paths.USER_INPUT, "GxGxxG_motif_pos.pkl")
     # output_path = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
-    # main(input_path, output_path)
-    # input_path = os.path.join(paths.ROOT, "output.pkl")
-    # output_path = os.path.join(paths.ROOT, "output_descr.pkl")
-    # main(input_path, output_path)
-    # input_path = os.path.join(paths.ROOT, "output.pkl")
-    # output_path = os.path.join(paths.ROOT, "output_descr.pkl")
-    # main(input_path, output_path)
+    # build_descr(input_path, output_path)
+    #
+    # input_path = os.path.join(paths.USER_INPUT, "GxGGxG_motif_pos.pkl")
+    # output_path = os.path.join(paths.DESCRS, "GxGGxG_descr.pkl")
+    # build_descr(input_path, output_path)

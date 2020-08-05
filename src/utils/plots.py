@@ -270,8 +270,8 @@ def main():
      'category', 'donor', 'acc', 'res', 'CA', 'filename', 'seq_marker', 'cid']
     """
     # input_df = os.path.join(paths.ROOT, "output_descr.pkl")
-
-    input_df = os.path.join(paths.DESCRS, "GxxGxG_descr.pkl")
+    input_df = os.path.join(paths.DESCRS, "GxGxxG_descr2.pkl")
+    # input_df = os.path.join(paths.DESCRS, "GxxGxG_descr.pkl")
     # input_df = os.path.join(paths.DESCRS, "GxGxxG_descr_search4.pkl")
     # input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.json")
     # input_df = os.path.join(paths.DESCRS, "GxGxxG_descr.pkl")
